@@ -1,0 +1,9 @@
+[33m69106f3[m[33m ([m[1;36mHEAD -> [m[1;32mSharma_branch[m[33m, [m[1;31morigin/Sharma_branch[m[33m)[m HEAD@{0}: rebase (finish): returning to refs/heads/Sharma_branch
+[33m69106f3[m[33m ([m[1;36mHEAD -> [m[1;32mSharma_branch[m[33m, [m[1;31morigin/Sharma_branch[m[33m)[m HEAD@{1}: rebase (start): checkout 69106f3774812a8582807c4aec6498f51db99302
+[33md6d45e0[m HEAD@{2}: rebase (finish): returning to refs/heads/Sharma_branch
+[33md6d45e0[m HEAD@{3}: rebase (start): checkout d6d45e09957f19c21dc0d3ff762e5b4092e1ee64
+[33mfe10b62[m HEAD@{4}: commit: some debugging on focus error in gameController
+[33md6d45e0[m HEAD@{5}: commit: some debugging on focus error in gameController
+[33m69106f3[m[33m ([m[1;36mHEAD -> [m[1;32mSharma_branch[m[33m, [m[1;31morigin/Sharma_branch[m[33m)[m HEAD@{6}: commit: some debugging on focus error in gameController
+[33m1ce7e9d[m[33m ([m[1;31morigin/master[m[33m, [m[1;32mmaster[m[33m)[m HEAD@{7}: checkout: moving from master to Sharma_branch
+[33m1ce7e9d[m[33m ([m[1;31morigin/master[m[33m, [m[1;32mmaster[m[33m)[m HEAD@{8}: commit (initial): basic start menu and game window
