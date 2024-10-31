@@ -67,6 +67,13 @@ public class GameController extends Pane {
         // Request focus so key events are captured
         this.setFocusTraversable(true);
         this.requestFocus();
+
+        // Listen for focus changes and re-request focus if lost
+        this.sceneProperty().addListener((obs, oldScene, newScene) -> {
+            if (newScene != null) {
+                newScene.setOnMouseClicked(e -> this.requestFocus());
+            }
+        });
     }
 
 

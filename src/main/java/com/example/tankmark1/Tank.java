@@ -19,17 +19,18 @@ public class Tank extends ImageView {
 
     public void move(double dx, double dy) {
         System.out.println("Moving with dx: " + dx + ", dy: " + dy + ", speed: " + speed);
-        double newX = getLayoutX() + dx * speed;
-        double newY = getLayoutY() + dy * speed;
+        double newX = getX() + dx * speed;
+        double newY = getY() + dy * speed;
 
         // Ensure the tank stays within the game area boundaries
         if (newX >= 0 && newX <= 750) { // Adjust based on game area width and tank size
-            setLayoutX(newX);
+            setX(newX);
         }
         if (newY >= 0 && newY <= 550) { // Adjust based on game area height and tank size
-            setLayoutY(newY);
+            setY(newY);
         }
     }
+
 
 
     public void shoot() {

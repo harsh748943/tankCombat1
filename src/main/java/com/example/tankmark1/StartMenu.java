@@ -66,5 +66,6 @@ public class StartMenu extends GridPane {
         Scene scene = new Scene(gameController, 800, 600);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Tank Game - " + selectedMap);
+        gameController.requestFocus();
     }
 }
