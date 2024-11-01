@@ -5,7 +5,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
-
+//
 public class StartMenu extends GridPane {
     private ComboBox<String> playerSelector;
     private ComboBox<String> weaponSelector;
