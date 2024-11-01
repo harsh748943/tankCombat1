@@ -25,36 +25,50 @@ public class GameController extends Pane {
     private String selectedMap;
     private boolean soundOn;
     private MediaPlayer mediaPlayer;
+    private TankGame mainApp;  // Reference to the main application
     public Tank tank1;
     public Tank tank2;
     private ProgressBar healthBar1, healthBar2;
+    private Text healthText1, healthText2;
     private Text winnerText;
     private Set<KeyCode> pressedKeys = new HashSet<>();
     private List<Projectile> projectiles = new ArrayList<>();
     private Thread movementThread;
 
-    public GameController(int numPlayers, String selectedWeapon, String selectedMap, boolean soundOn) {
+    public GameController(int numPlayers, String selectedWeapon, String selectedMap, boolean soundOn, TankGame mainApp) {
         this.numPlayers = numPlayers;
         this.selectedWeapon = selectedWeapon;
         this.selectedMap = selectedMap;
         this.soundOn = soundOn;
+        this.mainApp = mainApp;  // Assign mainApp reference
 
         setUpMap();
         setUpTanks();
         setUpHealthBars();
-        startGame();
     }
 
     private void setUpHealthBars() {
         healthBar1 = new ProgressBar(1);
         healthBar1.setStyle("-fx-accent: green;");
+        healthText1 = new Text("100%");
+
+        // Position Player 1’s health on the left
+        HBox player1HealthBox = new HBox(5, healthBar1, healthText1);
+        player1HealthBox.setLayoutX(10);
+        player1HealthBox.setLayoutY(10);
+
+
         healthBar2 = new ProgressBar(1);
         healthBar2.setStyle("-fx-accent: green;");
+        healthText2 = new Text("100%");
 
-        HBox healthBars = new HBox(10, healthBar1, healthBar2);
-        healthBars.setLayoutX(10);
-        healthBars.setLayoutY(10);
-        this.getChildren().add(healthBars);
+        // Position Player 2’s health on the right
+        HBox player2HealthBox = new HBox(5, healthText2, healthBar2);
+        player2HealthBox.setLayoutX(650); // Adjust based on scene width
+        player2HealthBox.setLayoutY(10);
+
+
+        this.getChildren().addAll(player1HealthBox,player2HealthBox);
 
         winnerText = new Text();
         winnerText.setFill(Color.RED);
@@ -65,18 +79,52 @@ public class GameController extends Pane {
     }
 
     public void updateHealthBars() {
-        healthBar1.setProgress(tank1.getHealth() / 100.0);
-        healthBar2.setProgress(tank2.getHealth() / 100.0);
+        // Update Player 1 health bar and text
+        double health1 = tank1.getHealth();
+        healthBar1.setProgress(health1 / 100.0);
+        healthText1.setText((int) health1 + "%");
+
+        // Update Player 2 health bar and text
+        double health2 = tank2.getHealth();
+        healthBar2.setProgress(health2 / 100.0);
+        healthText2.setText((int) health2 + "%");
     }
 
-    public void checkForWin() {
+    private void checkForWin() {
         if (tank1.isDestroyed()) {
-            winnerText.setText("Player 2 Wins!");
-            winnerText.setVisible(true);
+            endGame("Player 2 Wins!");
         } else if (tank2.isDestroyed()) {
-            winnerText.setText("Player 1 Wins!");
-            winnerText.setVisible(true);
+            endGame("Player 1 Wins!");
         }
+    }
+
+    private void endGame(String winnerMessage) {
+        // Stop movement and projectile threads
+        if (movementThread != null && movementThread.isAlive()) {
+            movementThread.interrupt();
+        }
+
+        // Stop background music if playing
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+        }
+
+        // Display winner message and await Enter key to return to menu
+        Platform.runLater(() -> {
+            winnerText.setText(winnerMessage + " Press Enter to exit.");
+            winnerText.setVisible(true);
+
+            // Disable tank controls to prevent further movement
+            this.setOnKeyPressed(null);
+            this.setOnKeyReleased(null);
+
+            // Set a listener for the Enter key to return to the menu
+            this.setOnKeyPressed(event -> {
+                if (event.getCode() == KeyCode.ENTER) {
+                    mainApp.returnToMenu();
+                }
+            });
+        });
     }
 
     private void setUpMap() {
