@@ -20,8 +20,8 @@ public class Tank extends ImageView {
         super(new Image(imagePath));
         setX(x);
         setY(y);
-        setFitWidth(50);
-        setFitHeight(50);
+        setFitWidth(100);
+        setFitHeight(100);
         setPreserveRatio(true);
         this.weapon = weapon;
         this.lastShotTime = 0; // Initialize last shot time
@@ -46,10 +46,10 @@ public class Tank extends ImageView {
         double newY = getY() + dy * speed;
 
         // Ensure the tank stays within the game area boundaries
-        if (newX >= 0 && newX <= 750) { // Adjust based on game area width and tank size
+        if (newX >= 0 && newX <= 1260) { // Adjust based on game area width and tank size
             setX(newX);
         }
-        if (newY >= 0 && newY <= 550) { // Adjust based on game area height and tank size
+        if (newY >= 0 && newY <= 720) { // Adjust based on game area height and tank size
             setY(newY);
         }
 

@@ -4,6 +4,6 @@ import javafx.scene.layout.Pane;
 
 public abstract class Map extends Pane {
     public Map() {
-        setPrefSize(800, 600);
+        setPrefSize(1260, 720);
     }
 }

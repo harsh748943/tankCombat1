@@ -16,7 +16,7 @@ public class TankGame extends Application {
 
         // Initialize the main menu and set up the initial scene
         startMenu = new StartMenu(primaryStage, this);
-        mainMenuScene = new Scene(startMenu, 800, 600);
+        mainMenuScene = new Scene(startMenu, 1260, 720);
 
         primaryStage.setTitle("Tank Game");
         primaryStage.setScene(mainMenuScene);
@@ -26,7 +26,7 @@ public class TankGame extends Application {
     // Method to start the game, creating a new GameController with selected settings
     public void startGame(int numPlayers, String selectedWeapon, String selectedMap, boolean soundOn) {
         GameController gameController = new GameController(numPlayers, selectedWeapon, selectedMap, soundOn, this);
-        gameScene = new Scene(gameController, 800, 600);
+        gameScene = new Scene(gameController, 1260, 720);
 
         primaryStage.setScene(gameScene);
         gameController.startGame();
