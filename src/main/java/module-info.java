@@ -7,4 +7,8 @@ module com.example.tankmark1 {
 
     opens com.example.tankmark1 to javafx.fxml;
     exports com.example.tankmark1;
+    exports com.example.tankmark1.map;
+    opens com.example.tankmark1.map to javafx.fxml;
+    exports com.example.tankmark1.weapons;
+    opens com.example.tankmark1.weapons to javafx.fxml;
 }
