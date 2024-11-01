@@ -12,7 +12,7 @@ public class StartMenu extends GridPane {
     private ComboBox<String> mapSelector;
     private CheckBox soundCheckbox;
 
-    public StartMenu(Stage primaryStage) {
+    public StartMenu(Stage primaryStage, TankGame mainApp) {
         setPadding(new Insets(20));
         setVgap(10);
         setHgap(10);
@@ -41,7 +41,12 @@ public class StartMenu extends GridPane {
 
         // Start game button
         Button startButton = new Button("Start Game");
-        startButton.setOnAction(e -> startGame(primaryStage));
+        startButton.setOnAction(e -> mainApp.startGame(
+                Integer.parseInt(playerSelector.getValue()),
+                weaponSelector.getValue(),
+                mapSelector.getValue(),
+                soundCheckbox.isSelected()
+        ));
 
         // Adding components to the layout
         add(playerLabel, 0, 0);
@@ -52,20 +57,5 @@ public class StartMenu extends GridPane {
         add(mapSelector, 1, 2);
         add(soundCheckbox, 0, 3, 2, 1);
         add(startButton, 0, 4, 2, 1);
-    }
-
-    private void startGame(Stage primaryStage) {
-        System.out.println("Start game");
-        int numPlayers = Integer.parseInt(playerSelector.getValue());
-        String selectedWeapon = weaponSelector.getValue();
-        String selectedMap = mapSelector.getValue();
-        boolean soundOn = soundCheckbox.isSelected();
-
-        // Pass these settings to the game controller
-        GameController gameController = new GameController(numPlayers, selectedWeapon, selectedMap, soundOn);
-        Scene scene = new Scene(gameController, 800, 600);
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("Tank Game - " + selectedMap);
-        gameController.requestFocus();
     }
 }
