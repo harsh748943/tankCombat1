@@ -64,7 +64,7 @@ public class GameController extends Pane {
 
         // Position Player 2’s health on the right
         HBox player2HealthBox = new HBox(5, healthText2, healthBar2);
-        player2HealthBox.setLayoutX(650); // Adjust based on scene width
+        player2HealthBox.setLayoutX(1000); // Adjust based on scene width
         player2HealthBox.setLayoutY(10);
 
 
@@ -139,11 +139,11 @@ public class GameController extends Pane {
 
     private void setUpTanks() {
         if (numPlayers >= 1) {
-            tank1 = new Tank(100, 100, "tank1.png", selectedWeapon);
+            tank1 = new Tank(100, 100, "tank.png", selectedWeapon);
             this.getChildren().add(tank1);
         }
         if (numPlayers >= 2) {
-            tank2 = new Tank(700, 500, "tank2.png", selectedWeapon);
+            tank2 = new Tank(1000, 600, "tank.png", selectedWeapon);
             this.getChildren().add(tank2);
         }
     }
