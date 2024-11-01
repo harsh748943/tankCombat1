@@ -1,4 +1,4 @@
-package com.example.tankmark1;
+package com.example.tankmark1.map;
 
 public class ForestMap extends Map {
     public ForestMap() {

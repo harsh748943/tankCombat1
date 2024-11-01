@@ -1,4 +1,4 @@
-package com.example.tankmark1;
+package com.example.tankmark1.map;
 
 import javafx.scene.layout.Pane;
 
