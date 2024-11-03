@@ -1,0 +1,38 @@
+/* Background styling for StartMenu */
+.root {
+    -fx-background-image: url("TankBg.jpg");
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center;
+    -fx-background-size: cover;
+}
+
+/* Title styling */
+.title {
+    -fx-font-family: Arial;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+/* Label styling */
+.label {
+    -fx-font-family: Arial;
+    -fx-font-size: 16px;
+    -fx-font-weight: semi-bold;
+    -fx-text-fill: white;
+}
+
+/* Checkbox styling */
+.checkbox {
+    -fx-font-family: Arial;
+    -fx-font-size: 14px;
+    -fx-text-fill: white;
+}
+
+/* Start button styling */
+.start-button {
+    -fx-background-color: #ff5722;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 20px;
+}

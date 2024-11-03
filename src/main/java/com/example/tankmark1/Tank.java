@@ -1,6 +1,5 @@
 package com.example.tankmark1;
 
-import com.example.tankmark1.map.Boundary;
 import com.example.tankmark1.weapons.Cannon;
 import com.example.tankmark1.weapons.Missile;
 import com.example.tankmark1.weapons.Projectile;
@@ -10,17 +9,12 @@ import javafx.scene.image.ImageView;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
-import java.util.List;
-
 public class Tank extends ImageView {
     private double speed = 5;
     private String weapon;
     private long lastShotTime; // Time when the last shot was fired
     private static final long SHOOT_DELAY = 1000; // Minimum time delay between shots (ms)
     private int health = 100; // Health attribute
-
-    // Tank's boundary (hitbox)
-    private Boundary hitbox;
 
     public Tank(double x, double y, String imagePath, String weapon) {
         super(new Image(imagePath));
@@ -31,9 +25,6 @@ public class Tank extends ImageView {
         setPreserveRatio(true);
         this.weapon = weapon;
         this.lastShotTime = 0; // Initialize last shot time
-
-        // Initialize the tank's boundary (hitbox) based on its dimensions and position
-        this.hitbox = new Boundary(x, y, getFitWidth(), getFitHeight());
     }
 
     public int getHealth() {
@@ -49,39 +40,21 @@ public class Tank extends ImageView {
         return health <= 0;
     }
 
-    // Method to get tank's hitbox
-    public Boundary getHitbox() {
-        return hitbox;
-    }
-
-    public void move(double dx, double dy, List<Boundary> staticBoundaries) {
+    public void move(double dx, double dy) {
         System.out.println("Moving with dx: " + dx + ", dy: " + dy + ", speed: " + speed);
-
-        // Calculate new position
         double newX = getX() + dx * speed;
         double newY = getY() + dy * speed;
 
-        // Create a temporary hitbox for the proposed new position
-        Boundary newHitbox = new Boundary(newX, newY, getFitWidth(), getFitHeight());
-
-        // Check for collisions with static elements
-        boolean collisionDetected = false;
-        for (Boundary boundary : staticBoundaries) {
-            if (newHitbox.intersects(boundary)) {
-                collisionDetected = true;
-                break;
-            }
-        }
-
-        // Update tank position if no collision
-        if (!collisionDetected) {
+        // Ensure the tank stays within the game area boundaries
+        if (newX >= 0 && newX <= 750) { // Adjust based on game area width and tank size
             setX(newX);
-            setY(newY);
-            // Update the tank's hitbox to the new position
-            hitbox = newHitbox;
-            // Rotate tank according to movement direction
-            rotateToDirection(dx, dy);
         }
+        if (newY >= 0 && newY <= 550) { // Adjust based on game area height and tank size
+            setY(newY);
+        }
+
+        // Rotate tank according to movement direction
+        rotateToDirection(dx, dy);
     }
 
     private void rotateToDirection(double dx, double dy) {
@@ -101,7 +74,6 @@ public class Tank extends ImageView {
             double projectileSpeed;
             double projectileSize;
             Projectile projectile;
-
             // Calculate direction based on the tank's rotation
             double angle = Math.toRadians(getRotate()); // Convert to radians
             double dx = Math.cos(angle); // Calculate x direction
@@ -112,42 +84,44 @@ public class Tank extends ImageView {
                     projectileImagePath = "cannonball.png"; // Path for cannonball image
                     projectileSpeed = 8;
                     projectileSize = 30;
-                    projectile = new Cannon(getX() + 25, getY(), dx * projectileSpeed, dy * projectileSpeed, angle, this);
+                    projectile = new Cannon(getX() + 25, getY(),dx * projectileSpeed, dy * projectileSpeed,angle,this);
                     playShootingSound("/laserSound.wav"); // Play sound
-
                     break;
                 case "Missile":
                     projectileImagePath = "rocket.png"; // Path for missile image
                     projectileSpeed = 1;
                     projectileSize = 50;
-                    projectile = new Missile(getX() + 25, getY(), dx * projectileSpeed, dy * projectileSpeed, angle, this);
+                    projectile = new Missile(getX() + 25, getY(),dx * projectileSpeed, dy * projectileSpeed,angle,this);
                     playShootingSound("/levelBossTorpedo.wav"); // Play sound
                     break;
                 case "Laser":
                     projectileImagePath = "laser.png"; // Path for laser image
                     projectileSpeed = 4;
                     projectileSize = 50;
-                    projectile = new Torpedo(getX() + 25, getY(), dx * projectileSpeed, dy * projectileSpeed, angle, this);
+                    projectile = new Torpedo(getX() + 25, getY(),dx * projectileSpeed, dy * projectileSpeed,angle,this);
                     playShootingSound("/levelBossRocket.wav"); // Play sound
                     break;
                 default:
                     projectileImagePath = "default.png"; // Fallback image
                     projectileSpeed = 10;
                     projectileSize = 20;
-                    projectile = new Missile(getX() + 25, getY(), dx * projectileSpeed, dy * projectileSpeed, angle, this);
+                    projectile = new Missile(getX() + 25, getY(),dx * projectileSpeed, dy * projectileSpeed,angle,this);
                     playShootingSound("/laserSound.wav"); // Play sound
                     break;
             }
 
+
+
             // Create the projectile with specific properties
+
             projectile.setFitWidth(projectileSize);
             projectile.setFitHeight(projectileSize);
 
             // Add the projectile to the game
             gameController.addProjectile(projectile);
         }
-    }
 
+    }
     private void playShootingSound(String soundFileName) {
         String soundPath = getClass().getResource(soundFileName).toExternalForm();
         Media shotSound = new Media(soundPath);

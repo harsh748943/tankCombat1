@@ -1,7 +1,9 @@
 package com.example.tankmark1;
 
-import com.example.tankmark1.map.*;
+import com.example.tankmark1.map.DesertMap;
+import com.example.tankmark1.map.ForestMap;
 import com.example.tankmark1.map.Map;
+import com.example.tankmark1.map.SnowMap;
 import com.example.tankmark1.weapons.Projectile;
 import javafx.application.Platform;
 import javafx.scene.control.ProgressBar;
@@ -14,6 +16,7 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+
 import java.util.*;
 
 public class GameController extends Pane {
@@ -22,71 +25,69 @@ public class GameController extends Pane {
     private String selectedMap;
     private boolean soundOn;
     private MediaPlayer mediaPlayer;
-    private TankGame mainApp;
-    private Tank tank1;
-    private Tank tank2;
+    private TankGame mainApp;  // Reference to the main application
+    public Tank tank1;
+    public Tank tank2;
     private ProgressBar healthBar1, healthBar2;
     private Text healthText1, healthText2;
     private Text winnerText;
     private Set<KeyCode> pressedKeys = new HashSet<>();
     private List<Projectile> projectiles = new ArrayList<>();
     private Thread movementThread;
-    private List<Boundary> boundaries; // Add this field
-    private Thread projectileThread;
 
     public GameController(int numPlayers, String selectedWeapon, String selectedMap, boolean soundOn, TankGame mainApp) {
         this.numPlayers = numPlayers;
         this.selectedWeapon = selectedWeapon;
         this.selectedMap = selectedMap;
         this.soundOn = soundOn;
-        this.mainApp = mainApp;
+        this.mainApp = mainApp;  // Assign mainApp reference
 
         setUpMap();
         setUpTanks();
         setUpHealthBars();
-        startGame();
     }
 
     private void setUpHealthBars() {
-        healthBar1 = createHealthBar();
+        healthBar1 = new ProgressBar(1);
+        healthBar1.setStyle("-fx-accent: green;");
         healthText1 = new Text("100%");
 
+        // Position Player 1’s health on the left
         HBox player1HealthBox = new HBox(5, healthBar1, healthText1);
         player1HealthBox.setLayoutX(10);
         player1HealthBox.setLayoutY(10);
 
-        healthBar2 = createHealthBar();
+
+        healthBar2 = new ProgressBar(1);
+        healthBar2.setStyle("-fx-accent: green;");
         healthText2 = new Text("100%");
 
+        // Position Player 2’s health on the right
         HBox player2HealthBox = new HBox(5, healthText2, healthBar2);
-        player2HealthBox.setLayoutX(650);
+        player2HealthBox.setLayoutX(650); // Adjust based on scene width
         player2HealthBox.setLayoutY(10);
 
-        getChildren().addAll(player1HealthBox, player2HealthBox);
-        winnerText = createWinnerText();
-        getChildren().add(winnerText);
-    }
 
-    private ProgressBar createHealthBar() {
-        ProgressBar healthBar = new ProgressBar(1);
-        healthBar.setStyle("-fx-accent: green;");
-        return healthBar;
-    }
+        this.getChildren().addAll(player1HealthBox,player2HealthBox);
 
-    private Text createWinnerText() {
-        Text winnerText = new Text();
+        winnerText = new Text();
         winnerText.setFill(Color.RED);
         winnerText.setLayoutX(350);
         winnerText.setLayoutY(50);
         winnerText.setVisible(false);
-        return winnerText;
+        this.getChildren().add(winnerText);
     }
 
     public void updateHealthBars() {
-        healthBar1.setProgress(tank1.getHealth() / 100.0);
-        healthText1.setText((int) tank1.getHealth() + "%");
-        healthBar2.setProgress(tank2.getHealth() / 100.0);
-        healthText2.setText((int) tank2.getHealth() + "%");
+        // Update Player 1 health bar and text
+        double health1 = tank1.getHealth();
+        healthBar1.setProgress(health1 / 100.0);
+        healthText1.setText((int) health1 + "%");
+
+        // Update Player 2 health bar and text
+        double health2 = tank2.getHealth();
+        healthBar2.setProgress(health2 / 100.0);
+        healthText2.setText((int) health2 + "%");
     }
 
     private void checkForWin() {
@@ -98,42 +99,32 @@ public class GameController extends Pane {
     }
 
     private void endGame(String winnerMessage) {
-        interruptThreads();
-        stopBackgroundMusic();
-        displayWinnerMessage(winnerMessage);
-        disableControls();
-    }
-
-    private void interruptThreads() {
+        // Stop movement and projectile threads
         if (movementThread != null && movementThread.isAlive()) {
             movementThread.interrupt();
         }
-        if (projectileThread != null && projectileThread.isAlive()) {
-            projectileThread.interrupt();
-        }
-    }
 
-    private void stopBackgroundMusic() {
+        // Stop background music if playing
         if (mediaPlayer != null) {
             mediaPlayer.stop();
         }
-    }
 
-    private void displayWinnerMessage(String winnerMessage) {
+        // Display winner message and await Enter key to return to menu
         Platform.runLater(() -> {
             winnerText.setText(winnerMessage + " Press Enter to exit.");
             winnerText.setVisible(true);
-            setOnKeyPressed(event -> {
+
+            // Disable tank controls to prevent further movement
+            this.setOnKeyPressed(null);
+            this.setOnKeyReleased(null);
+
+            // Set a listener for the Enter key to return to the menu
+            this.setOnKeyPressed(event -> {
                 if (event.getCode() == KeyCode.ENTER) {
                     mainApp.returnToMenu();
                 }
             });
         });
-    }
-
-    private void disableControls() {
-        setOnKeyPressed(null);
-        setOnKeyReleased(null);
     }
 
     private void setUpMap() {
@@ -143,18 +134,17 @@ public class GameController extends Pane {
             case "Desert" -> currentMap = new DesertMap();
             default -> currentMap = new SnowMap();
         }
-        boundaries = currentMap.getBoundaries(); // Initialize boundaries
-        getChildren().add(currentMap);
+        this.getChildren().add(currentMap);
     }
 
     private void setUpTanks() {
         if (numPlayers >= 1) {
             tank1 = new Tank(100, 100, "tank1.png", selectedWeapon);
-            getChildren().add(tank1);
+            this.getChildren().add(tank1);
         }
         if (numPlayers >= 2) {
             tank2 = new Tank(700, 500, "tank2.png", selectedWeapon);
-            getChildren().add(tank2);
+            this.getChildren().add(tank2);
         }
     }
 
@@ -163,17 +153,18 @@ public class GameController extends Pane {
             playBackgroundMusic();
         }
 
-        setOnKeyPressed(this::handleKeyPressed);
-        setOnKeyReleased(this::handleKeyReleased);
-        setFocusTraversable(true);
-        requestFocus();
+        this.setOnKeyPressed(this::handleKeyPressed);
+        this.setOnKeyReleased(this::handleKeyReleased);
+
+        this.setFocusTraversable(true);
+        this.requestFocus();
 
         startMovementThread();
         startProjectileThread();
     }
 
     private void startProjectileThread() {
-        projectileThread = new Thread(() -> {
+        new Thread(() -> {
             while (true) {
                 Platform.runLater(this::updateProjectiles);
                 try {
@@ -183,16 +174,13 @@ public class GameController extends Pane {
                     break;
                 }
             }
-        });
-        projectileThread.setDaemon(true);
-        projectileThread.start();
+        }).start();
     }
 
     private void updateProjectiles() {
         for (Projectile projectile : new ArrayList<>(projectiles)) {
             projectile.move();
 
-            // Check collision with tank1, ensuring tank1 is not null
             if (tank1 != null && checkCollision(projectile, tank1) && projectile.getOwner() != tank1) {
                 tank1.takeDamage(projectile.getDamage());
                 updateHealthBars();
@@ -200,7 +188,6 @@ public class GameController extends Pane {
                 checkForWin();
             }
 
-            // Check collision with tank2, ensuring tank2 is not null
             if (tank2 != null && checkCollision(projectile, tank2) && projectile.getOwner() != tank2) {
                 tank2.takeDamage(projectile.getDamage());
                 updateHealthBars();
@@ -208,22 +195,17 @@ public class GameController extends Pane {
                 checkForWin();
             }
 
-            // Remove projectile if out of bounds
             if (isOutOfBounds(projectile)) {
                 removeProjectile(projectile);
             }
         }
     }
 
-
     private boolean checkCollision(Projectile projectile, Tank tank) {
-        if (tank == null) return false; // Add this check
-
         Rectangle projectileBounds = new Rectangle(projectile.getX(), projectile.getY(), projectile.getFitWidth(), projectile.getFitHeight());
         Rectangle tankBounds = new Rectangle(tank.getX(), tank.getY(), tank.getFitWidth(), tank.getFitHeight());
         return projectileBounds.getBoundsInParent().intersects(tankBounds.getBoundsInParent());
     }
-
 
     private boolean isOutOfBounds(Projectile projectile) {
         return projectile.getX() < 0 || projectile.getY() < 0 || projectile.getX() > getWidth() || projectile.getY() > getHeight();
@@ -276,16 +258,14 @@ public class GameController extends Pane {
     }
 
     private void updateTankPosition(Tank tank, double dx, double dy) {
-        if (tank != null) { // Check that tank is not null before calling move
-            Platform.runLater(() -> tank.move(dx, dy, boundaries)); // Pass boundaries to move method
-        }
+        Platform.runLater(() -> tank.move(dx, dy));
     }
-
 
     private void playBackgroundMusic() {
         if (mediaPlayer == null) {
             String musicFilePath = getClass().getResource("/background.mp3").toExternalForm();
-            mediaPlayer = new MediaPlayer(new Media(musicFilePath));
+            Media sound = new Media(musicFilePath);
+            mediaPlayer = new MediaPlayer(sound);
             mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
         }
         mediaPlayer.play();
