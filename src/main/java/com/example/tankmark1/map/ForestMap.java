@@ -5,6 +5,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -13,14 +14,13 @@ public class ForestMap extends Map {
     private static final int WIDTH = 1200;
     private static final int HEIGHT = 800;
     private static final double MIN_DISTANCE = 50;
-    private double scale = 1.0;
     private Random random = new Random();
 
     // Lists for forest elements
     private List<double[]> trees = new ArrayList<>();
     private List<double[]> rocks = new ArrayList<>();
-    private List<double[]> bushes = new ArrayList<>(); // List for bushes
-    private List<double[]> flowers = new ArrayList<>(); // List for flowers
+    private List<double[]> bushes = new ArrayList<>();
+    private List<double[]> flowers = new ArrayList<>();
 
     // Images for forest elements
     private Image treeImage, rockImage, bushImage, flowerImage;
@@ -32,8 +32,8 @@ public class ForestMap extends Map {
         // Load images for forest elements
         treeImage = new Image("file:C:\\Users\\hp\\IdeaProjects\\tankCombat1\\src\\main\\resources\\tree.png");
         rockImage = new Image("file:C:\\Users\\hp\\IdeaProjects\\tankCombat1\\src\\main\\resources\\rock.png");
-        bushImage = new Image("file:C:\\Users\\hp\\IdeaProjects\\tankCombat1\\src\\main\\resources\\bushes.png"); // Load the bushes image
-        flowerImage = new Image("file:C:\\Users\\hp\\IdeaProjects\\tankCombat1\\src\\main\\resources\\flower.png"); // Load the flowers image
+        bushImage = new Image("file:C:\\Users\\hp\\IdeaProjects\\tankCombat1\\src\\main\\resources\\bushes.png");
+        flowerImage = new Image("file:C:\\Users\\hp\\IdeaProjects\\tankCombat1\\src\\main\\resources\\flower.png");
 
         // Generate positions for trees, rocks, bushes, and flowers
         generateForestElements();
@@ -53,8 +53,8 @@ public class ForestMap extends Map {
         // Populate trees, rocks, bushes, and flowers with randomly generated positions
         for (int i = 0; i < 30; i++) trees.add(generatePosition());
         for (int i = 0; i < 15; i++) rocks.add(generatePosition());
-        for (int i = 0; i < 20; i++) bushes.add(generatePosition()); // Generate bush positions
-        for (int i = 0; i < 25; i++) flowers.add(generatePosition()); // Generate flower positions
+        for (int i = 0; i < 20; i++) bushes.add(generatePosition());
+        for (int i = 0; i < 25; i++) flowers.add(generatePosition());
     }
 
     private double[] generatePosition() {
@@ -72,10 +72,10 @@ public class ForestMap extends Map {
         gc.fillRect(0, 0, WIDTH, HEIGHT);
 
         // Draw trees, rocks, bushes, and flowers
-        drawElements(gc, trees, treeImage, 50, 60);
-        drawElements(gc, rocks, rockImage, 50, 40);
-        drawElements(gc, bushes, bushImage, 50, 30); // Draw bushes
-        drawElements(gc, flowers, flowerImage, 20, 40); // Draw flowers
+        drawElements(gc, trees, treeImage, 50, 60);  // Trees dimensions
+        drawElements(gc, rocks, rockImage, 50, 40);  // Rocks dimensions
+        drawElements(gc, bushes, bushImage, 50, 30);  // Bushes dimensions
+        drawElements(gc, flowers, flowerImage, 20, 40); // Flowers dimensions
     }
 
     private void drawElements(GraphicsContext gc, List<double[]> elements, Image image, int width, int height) {
@@ -98,5 +98,29 @@ public class ForestMap extends Map {
             }
         }
         return false;
+    }
+
+    // Method to retrieve the boundaries of the elements for collision detection
+    public List<Boundary> getBoundaries() {
+        List<Boundary> boundaries = new ArrayList<>();
+
+        // Create boundaries for trees
+        for (double[] pos : trees) {
+            boundaries.add(new Boundary(pos[0], pos[1], 50, 60)); // Assuming trees are 50x60
+        }
+        // Create boundaries for rocks
+        for (double[] pos : rocks) {
+            boundaries.add(new Boundary(pos[0], pos[1], 50, 40)); // Assuming rocks are 50x40
+        }
+        // Create boundaries for bushes
+        for (double[] pos : bushes) {
+            boundaries.add(new Boundary(pos[0], pos[1], 50, 30)); // Assuming bushes are 50x30
+        }
+        // Create boundaries for flowers
+        for (double[] pos : flowers) {
+            boundaries.add(new Boundary(pos[0], pos[1], 20, 40)); // Assuming flowers are 20x40
+        }
+
+        return boundaries;
     }
 }

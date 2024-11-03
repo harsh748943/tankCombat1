@@ -5,6 +5,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -15,7 +16,7 @@ public class DesertMap extends Map {
     private static final double MIN_DISTANCE = 50;
     private Random random = new Random();
 
-    // Lists for desert elements
+    // Lists for desert elements positions
     private List<double[]> cacti = new ArrayList<>();
     private List<double[]> rocks = new ArrayList<>();
     private List<double[]> bushes = new ArrayList<>();
@@ -97,5 +98,29 @@ public class DesertMap extends Map {
             }
         }
         return false;
+    }
+
+    // Method to retrieve the boundaries of the elements for collision detection
+    public List<Boundary> getBoundaries() {
+        List<Boundary> boundaries = new ArrayList<>();
+
+        // Create boundaries for cacti
+        for (double[] pos : cacti) {
+            boundaries.add(new Boundary(pos[0], pos[1], 50, 50)); // Assuming cacti are 50x50
+        }
+        // Create boundaries for rocks
+        for (double[] pos : rocks) {
+            boundaries.add(new Boundary(pos[0], pos[1], 50, 50)); // Assuming rocks are 50x50
+        }
+        // Create boundaries for bushes
+        for (double[] pos : bushes) {
+            boundaries.add(new Boundary(pos[0], pos[1], 40, 40)); // Assuming bushes are 40x40
+        }
+        // Create boundaries for flowers
+        for (double[] pos : flowers) {
+            boundaries.add(new Boundary(pos[0], pos[1], 40, 40)); // Assuming flowers are 40x40
+        }
+
+        return boundaries;
     }
 }

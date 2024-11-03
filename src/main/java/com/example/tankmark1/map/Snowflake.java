@@ -15,7 +15,7 @@ public class Snowflake {
 
     public void update() {
         y += speed; // Move the snowflake down by its speed
-        if (y > SnowMap.HEIGHT) {
+        if (y > SnowMap.HEIGHT) { // Accessing HEIGHT directly
             y = -size; // Reset snowflake to the top if it falls below the screen
             x = Math.random() * SnowMap.WIDTH; // Random horizontal position
         }
