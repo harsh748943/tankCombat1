@@ -3,7 +3,7 @@ package com.example.tankmark1.map;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-class DestructibleObject extends ImageView {
+public class DestructibleObject extends ImageView {
     private int health;
 
     public DestructibleObject(String imagePath, int width, int height) {
