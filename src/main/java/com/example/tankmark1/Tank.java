@@ -4,10 +4,12 @@ import com.example.tankmark1.weapons.Cannon;
 import com.example.tankmark1.weapons.Missile;
 import com.example.tankmark1.weapons.Projectile;
 import com.example.tankmark1.weapons.Torpedo;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.stage.Screen;
 
 public class Tank extends ImageView {
     private double speed = 5;
@@ -45,11 +47,16 @@ public class Tank extends ImageView {
         double newX = getX() + dx * speed;
         double newY = getY() + dy * speed;
 
-        // Ensure the tank stays within the game area boundaries
-        if (newX >= 0 && newX <= 1260) { // Adjust based on game area width and tank size
+        // Get the full screen dimensions
+        Rectangle2D screenBounds = Screen.getPrimary().getBounds();
+        double screenWidth = screenBounds.getWidth();
+        double screenHeight = screenBounds.getHeight();
+
+// Ensure the tank stays within the game area boundaries
+        if (newX >= 0 && newX <= screenWidth - 100) { // Adjust for tank width
             setX(newX);
         }
-        if (newY >= 0 && newY <= 720) { // Adjust based on game area height and tank size
+        if (newY >= 0 && newY <= screenHeight - 100) { // Adjust for tank height
             setY(newY);
         }
 
