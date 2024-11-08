@@ -2,11 +2,17 @@ package com.example.tankmark1.map;
 
 import javafx.scene.image.ImageView;
 
-public class ForestMap extends Map { public ForestMap() { setStyle("-fx-background-color: forestgreen;"); // Optional background color
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
-    // Add destructible objects to the map
-    addDestructibleObjects();
-}
+public class ForestMap extends Map {
+    public ForestMap() {
+        setStyle("-fx-background-color: forestgreen;"); // Optional background color
+
+        // Add destructible objects to the map
+        addDestructibleObjects();
+    }
 
 
     private void addDestructibleObjects() {
@@ -49,15 +55,23 @@ public class ForestMap extends Map { public ForestMap() { setStyle("-fx-backgrou
 
     }
 
+    public List<DestructibleObject> getDestructibleObjects() {
+        return getChildren().stream()
+                .filter(node -> node instanceof DestructibleObject)
+                .map(node -> (DestructibleObject) node)
+                .collect(Collectors.toList());
+    }
+
+
+    private List<DestructibleObject> destructibleList = new ArrayList<>();
 
     private void createDestructibleObject(String imagePath, int width, int height, double x, double y) {
-
-        DestructibleObject object = new DestructibleObject(imagePath, width, height);
+        DestructibleObject object = new DestructibleObject(imagePath, width, height, destructibleList); // Pass destructibleList
 
         object.setX(x);
-
         object.setY(y);
 
+        destructibleList.add(object); // Add to the list
         getChildren().add(object);
-
-    }}
+    }
+}

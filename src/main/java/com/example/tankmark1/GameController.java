@@ -32,6 +32,8 @@ public class GameController extends Pane {
     private Text winnerText;
     private Set<KeyCode> pressedKeys = new HashSet<>();
     private List<Projectile> projectiles = new ArrayList<>();
+    private List<DestructibleObject> destructibleObjects = new ArrayList<>();
+
     private Thread movementThread;
 
     public GameController(int numPlayers, String selectedWeapon, String selectedMap, boolean soundOn, TankGame mainApp) {
@@ -134,7 +136,13 @@ public class GameController extends Pane {
             default -> currentMap = new SnowMap();
         }
         this.getChildren().add(currentMap);
+
+        // Add destructible objects to the list for collision checking
+        if (currentMap instanceof ForestMap forestMap) {
+            destructibleObjects.addAll(forestMap.getDestructibleObjects());
+        }
     }
+
 
     private void setUpTanks() {
         if (numPlayers >= 1) {
@@ -207,6 +215,41 @@ public class GameController extends Pane {
                 }
             }
 
+
+
+            for (DestructibleObject destructible : new ArrayList<>(destructibleObjects)) {
+                if (checkCollisionForObject(projectile, destructible)) {
+                    destructible.takeDamage(projectile.getDamage());
+
+                    // Create explosion effect
+                    double adjustedX = projectile.getX() - 40;  // Adjust as needed
+                    double adjustedY = projectile.getY() - 40;  // Adjust as needed
+                    Explosion explosion = new Explosion(
+                            adjustedX, adjustedY,
+                            "/torpedoHitL1.png",
+                            "/explosionSound.mp3",
+                            5, 2,
+                            80, 80,
+                            this,
+                            true
+                    );
+                    Platform.runLater(() -> getChildren().add(explosion));
+
+                    // Remove projectile after collision
+                    removeProjectile(projectile);
+
+                    // Remove destructible object from list and scene if destroyed
+                    if (destructible.getHealth() <= 0) {
+                        removeDestructibleObject(destructible);
+                    }
+
+                    break;
+                }
+            }
+
+
+
+
             if (tank1 != null && checkCollision(projectile, tank1) && projectile.getOwner() != tank1) {
                 tank1.takeDamage(projectile.getDamage());
                 updateHealthBars();
@@ -258,11 +301,10 @@ public class GameController extends Pane {
         return projectileBounds.getBoundsInParent().intersects(tankBounds.getBoundsInParent());
     }
 
-    private boolean checkCollisionForObject(Projectile projectile, Tree t) {
-        Rectangle projectileBounds = new Rectangle(projectile.getX(), projectile.getY(), projectile.getFitWidth(), projectile.getFitHeight());
-        Rectangle tankBounds = new Rectangle(t.getX(), t.getY(), t.getFitWidth(), t.getFitHeight());
-        return projectileBounds.getBoundsInParent().intersects(tankBounds.getBoundsInParent());
+    private boolean checkCollisionForObject(Projectile projectile, DestructibleObject destructible) {
+        return projectile.getBoundsInParent().intersects(destructible.getBoundsInParent());
     }
+
 
     private boolean isOutOfBounds(Projectile projectile) {
         return projectile.getX() < 0 || projectile.getY() < 0 || projectile.getX() > getWidth() || projectile.getY() > getHeight();
@@ -337,4 +379,12 @@ public class GameController extends Pane {
         projectiles.add(projectile);
         Platform.runLater(() -> getChildren().add(projectile));
     }
+
+    public void removeDestructibleObject(DestructibleObject destructibleObject) {
+        Platform.runLater(() -> {
+            getChildren().remove(destructibleObject); // Remove from the scene graph
+            destructibleObjects.remove(destructibleObject); // Remove from tracking list
+        });
+    }
+
 }
