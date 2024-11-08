@@ -20,6 +20,7 @@ public class TankGame extends Application {
 
 
 
+
         // Initialize the main menu and set up the initial scene
 
         startMenu = new StartMenu(primaryStage, this);
@@ -27,7 +28,7 @@ public class TankGame extends Application {
 
         primaryStage.setTitle("Tank Game");
         primaryStage.setScene(mainMenuScene);
-       // primaryStage.setFullScreen(true);
+        // primaryStage.setFullScreen(true);
         primaryStage.setMaximized(true); // Maximize the window
         primaryStage.show();
     }
