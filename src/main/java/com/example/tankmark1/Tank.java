@@ -19,7 +19,7 @@ public class Tank extends ImageView {
     private int health = 100; // Health attribute
 
     // Margins in pixels (2 cm converted to pixels)
-    private static final double MARGIN = 2.0 / 2.54 * 96; // 2 cm to pixels (assuming 96 DPI)
+    private static final double MARGIN = 1.5 / 2.54 * 96; // 2 cm to pixels (assuming 96 DPI)
 
     public Tank(double x, double y, String imagePath, String weapon) {
         super(new Image(imagePath));
@@ -139,5 +139,10 @@ public class Tank extends ImageView {
         MediaPlayer mediaPlayer = new MediaPlayer(shotSound);
         mediaPlayer.setVolume(0.5); // Adjust volume if necessary
         mediaPlayer.play();
+    }
+
+    public void rotate(double angleDelta) {
+        // Adjust the tank's rotation angle by the specified delta
+        setRotate(getRotate() + angleDelta);
     }
 }

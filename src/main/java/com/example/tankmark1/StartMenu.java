@@ -24,7 +24,7 @@ public class StartMenu extends GridPane {
 
         // Load and set the background image
         BackgroundImage backgroundImage = new BackgroundImage(
-                new javafx.scene.image.Image("TankBg.jpg"),  // Load the image without preset dimensions
+                new javafx.scene.image.Image("TankBG4.jpg"),  // Load the image without preset dimensions
                 BackgroundRepeat.NO_REPEAT,
                 BackgroundRepeat.NO_REPEAT,
                 BackgroundPosition.CENTER,
