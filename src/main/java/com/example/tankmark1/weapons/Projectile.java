@@ -9,7 +9,7 @@ public class Projectile extends ImageView {
     private Tank owner; // Reference to the tank that fired this projectile
     private double dx; // Change in x direction
     private double dy; // Change in y direction
-      private int damage;
+    private int damage;
 
     public Projectile(double x, double y, String imagePath, double dx, double dy,double speed,double angle,int damage,Tank owner) {
         super(new Image(imagePath));
@@ -37,5 +37,10 @@ public class Projectile extends ImageView {
     public Tank getOwner() {
         return owner; // Getter for the owner
     }
-   // public abstract void applySpecialEffect();
+    // public abstract void applySpecialEffect();
+
+    public boolean collidesWith(Projectile other) {
+        return this.getBoundsInParent().intersects(other.getBoundsInParent());
+    }
+
 }

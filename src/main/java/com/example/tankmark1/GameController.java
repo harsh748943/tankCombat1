@@ -2,6 +2,7 @@ package com.example.tankmark1;
 
 import com.example.tankmark1.map.*;
 import com.example.tankmark1.map.Map;
+import com.example.tankmark1.weapons.Explosion;
 import com.example.tankmark1.weapons.Projectile;
 import javafx.application.Platform;
 import javafx.scene.control.ProgressBar;
@@ -179,11 +180,50 @@ public class GameController extends Pane {
         for (Projectile projectile : new ArrayList<>(projectiles)) {
             projectile.move();
 
+
+            // Check for collisions with other projectiles
+            for (Projectile other : new ArrayList<>(projectiles)) {
+                if (projectile != other && projectile.collidesWith(other)) {
+                    // Create an explosion at the point of collision
+                    // If you find that the explosion is misaligned, adjust like this:
+                    double adjustedX = projectile.getX() - (256 / 2);  // Center the explosion
+                    double adjustedY = projectile.getY() - (256 / 2); // Center the explosion
+                    Explosion explosion = new Explosion(
+                            adjustedX, adjustedY,  // Position of the explosion
+                            "/explosionL1.png",  // Path to explosion sprite sheet
+                            "/explosionSound.mp3",  // Path to explosion sound file
+                            8, 7,  // Columns and rows of the sprite sheet
+                            256, 256,  // Frame width and height
+                            this,// The node to shake during the explosion
+                            true
+                    );
+                    Platform.runLater(() -> getChildren().add(explosion));
+
+
+                    // Remove both projectiles on collision
+                    removeProjectile(projectile);
+                    removeProjectile(other);
+                    break;
+                }
+            }
+
             if (tank1 != null && checkCollision(projectile, tank1) && projectile.getOwner() != tank1) {
                 tank1.takeDamage(projectile.getDamage());
                 updateHealthBars();
                 removeProjectile(projectile);
                 checkForWin();
+                double adjustedX = projectile.getX() - (80 / 2);  // Center the explosion
+                double adjustedY = projectile.getY() - (80/ 2); // Center the explosion
+                Explosion explosion = new Explosion(
+                        adjustedX, adjustedY,  // Position of the explosion
+                        "/torpedoHitL1.png",  // Path to explosion sprite sheet
+                        "/explosionSound.mp3",  // Path to explosion sound file
+                        5, 2,  // Columns and rows of the sprite sheet
+                        80, 80,  // Frame width and height
+                        this,// The node to shake during the explosion
+                        true
+                );
+                Platform.runLater(() -> getChildren().add(explosion));
             }
 
             if (tank2 != null && checkCollision(projectile, tank2) && projectile.getOwner() != tank2) {
@@ -191,8 +231,19 @@ public class GameController extends Pane {
                 updateHealthBars();
                 removeProjectile(projectile);
                 checkForWin();
+                double adjustedX = projectile.getX() - (80 / 2);  // Center the explosion
+                double adjustedY = projectile.getY() - (80 / 2); // Center the explosion
+                Explosion explosion = new Explosion(
+                        adjustedX, adjustedY,  // Position of the explosion
+                        "/torpedoHitL1.png",  // Path to explosion sprite sheet
+                        "/explosionSound.mp3",  // Path to explosion sound file
+                        5, 2,  // Columns and rows of the sprite sheet
+                        80, 80,  // Frame width and height
+                        this,// The node to shake during the explosion
+                        true
+                );
+                Platform.runLater(() -> getChildren().add(explosion));
             }
-
 
 
             if (isOutOfBounds(projectile)) {
@@ -247,6 +298,11 @@ public class GameController extends Pane {
     }
 
     private void moveTanks() {
+
+        if (pressedKeys.contains(KeyCode.Q)) tank1.rotate(-5); // Rotate counterclockwise
+        if (pressedKeys.contains(KeyCode.E)) tank1.rotate(5); // Rotate clockwise
+
+
         if (tank1 != null) {
             if (pressedKeys.contains(KeyCode.W)) updateTankPosition(tank1, 0, -1);
             if (pressedKeys.contains(KeyCode.S)) updateTankPosition(tank1, 0, 1);
