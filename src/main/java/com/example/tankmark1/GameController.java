@@ -1,9 +1,7 @@
 package com.example.tankmark1;
 
-import com.example.tankmark1.map.DesertMap;
-import com.example.tankmark1.map.ForestMap;
+import com.example.tankmark1.map.*;
 import com.example.tankmark1.map.Map;
-import com.example.tankmark1.map.SnowMap;
 import com.example.tankmark1.weapons.Projectile;
 import javafx.application.Platform;
 import javafx.scene.control.ProgressBar;
@@ -49,7 +47,7 @@ public class GameController extends Pane {
 
     private void setUpHealthBars() {
         healthBar1 = new ProgressBar(1);
-        healthBar1.setStyle("-fx-accent: green;");
+        healthBar1.setStyle("-fx-accent: red;");
         healthText1 = new Text("100%");
 
         // Position Player 1’s health on the left
@@ -59,7 +57,7 @@ public class GameController extends Pane {
 
 
         healthBar2 = new ProgressBar(1);
-        healthBar2.setStyle("-fx-accent: green;");
+        healthBar2.setStyle("-fx-accent: BLUE;");
         healthText2 = new Text("100%");
 
         // Position Player 2’s health on the right
@@ -195,6 +193,8 @@ public class GameController extends Pane {
                 checkForWin();
             }
 
+
+
             if (isOutOfBounds(projectile)) {
                 removeProjectile(projectile);
             }
@@ -204,6 +204,12 @@ public class GameController extends Pane {
     private boolean checkCollision(Projectile projectile, Tank tank) {
         Rectangle projectileBounds = new Rectangle(projectile.getX(), projectile.getY(), projectile.getFitWidth(), projectile.getFitHeight());
         Rectangle tankBounds = new Rectangle(tank.getX(), tank.getY(), tank.getFitWidth(), tank.getFitHeight());
+        return projectileBounds.getBoundsInParent().intersects(tankBounds.getBoundsInParent());
+    }
+
+    private boolean checkCollisionForObject(Projectile projectile, Tree t) {
+        Rectangle projectileBounds = new Rectangle(projectile.getX(), projectile.getY(), projectile.getFitWidth(), projectile.getFitHeight());
+        Rectangle tankBounds = new Rectangle(t.getX(), t.getY(), t.getFitWidth(), t.getFitHeight());
         return projectileBounds.getBoundsInParent().intersects(tankBounds.getBoundsInParent());
     }
 
