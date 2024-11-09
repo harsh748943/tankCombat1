@@ -1,5 +1,6 @@
 package com.example.tankmark1;
 
+import com.example.tankmark1.map.DestructibleObject;
 import com.example.tankmark1.weapons.Cannon;
 import com.example.tankmark1.weapons.Missile;
 import com.example.tankmark1.weapons.Projectile;
@@ -9,7 +10,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Screen;
+
+import java.util.List;
 
 public class Tank extends ImageView {
     private double speed = 5;
@@ -19,7 +23,7 @@ public class Tank extends ImageView {
     private int health = 100; // Health attribute
 
     // Margins in pixels (2 cm converted to pixels)
-    private static final double MARGIN = 1.5 / 2.54 * 96; // 2 cm to pixels (assuming 96 DPI)
+    private static final double MARGIN = 0.5 / 2.54 * 96; // 2 cm to pixels (assuming 96 DPI)
 
     public Tank(double x, double y, String imagePath, String weapon) {
         super(new Image(imagePath));
@@ -45,7 +49,7 @@ public class Tank extends ImageView {
         return health <= 0;
     }
 
-    public void move(double dx, double dy) {
+    public void move(double dx, double dy, List<DestructibleObject> destructibleObjects) {
         System.out.println("Moving with dx: " + dx + ", dy: " + dy + ", speed: " + speed);
         double newX = getX() + dx * speed;
         double newY = getY() + dy * speed;
@@ -59,6 +63,18 @@ public class Tank extends ImageView {
         double usableWidth = screenWidth - (2 * MARGIN);
         double usableHeight = screenHeight - (2 * MARGIN);
 
+        // Check for collision with destructible objects
+        boolean collisionDetected = false;
+        for (DestructibleObject destructible : destructibleObjects) {
+            if (destructible.getHealth() > 0) { // Only check collision if object is not destroyed
+                Rectangle tankBounds = new Rectangle(newX, newY, getFitWidth(), getFitHeight());
+                if (tankBounds.getBoundsInParent().intersects(destructible.getBoundsInParent())) {
+                    collisionDetected = true;
+                    break;
+                }
+            }
+        }
+        if (!collisionDetected) {
         // Ensure the tank stays within the game area boundaries
         if (newX >= MARGIN && newX <= usableWidth - 100 + MARGIN) { // Adjust for tank width
             setX(newX);
@@ -69,7 +85,7 @@ public class Tank extends ImageView {
 
         // Rotate tank according to movement direction
         rotateToDirection(dx, dy);
-    }
+    }}
 
     private void rotateToDirection(double dx, double dy) {
         // Calculate angle based on dx, dy

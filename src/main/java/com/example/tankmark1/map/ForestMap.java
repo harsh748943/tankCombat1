@@ -2,6 +2,7 @@ package com.example.tankmark1.map;
 
 import javafx.scene.image.ImageView;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,15 +42,15 @@ public class ForestMap extends Map {
 
         // Create down forest objects
 
+//        for (int i = 0; i < 16; i++) {
+//
+//            createDestructibleObject("down forest.png", 200, 100, 1 + (i * 95), 692);
+//
+//        }
+
         for (int i = 0; i < 16; i++) {
 
-            createDestructibleObject("down forest.png", 200, 100, 1 + (i * 95), 692);
-
-        }
-
-        for (int i = 0; i < 16; i++) {
-
-            createDestructibleObject("upper forest.png", 200, 100, 1 + (i * 95), 1);
+            createDestructibleObject("upper forest.png", 200, 50, 1 + (i * 95), 1);
 
         }
 
@@ -66,12 +67,18 @@ public class ForestMap extends Map {
     private List<DestructibleObject> destructibleList = new ArrayList<>();
 
     private void createDestructibleObject(String imagePath, int width, int height, double x, double y) {
-        DestructibleObject object = new DestructibleObject(imagePath, width, height, destructibleList); // Pass destructibleList
-
-        object.setX(x);
-        object.setY(y);
-
-        destructibleList.add(object); // Add to the list
-        getChildren().add(object);
+        try {
+            URL imageUrl = getClass().getResource("/" + imagePath);
+            if (imageUrl == null) {
+                throw new IllegalArgumentException("Image not found: " + imagePath);
+            }
+            DestructibleObject object = new DestructibleObject(imageUrl.toExternalForm(), width, height, destructibleList);
+            object.setX(x);
+            object.setY(y);
+            destructibleList.add(object);
+            getChildren().add(object);
+        } catch (Exception e) {
+            System.err.println("Failed to load image: " + imagePath + " - " + e.getMessage());
+        }
     }
 }
