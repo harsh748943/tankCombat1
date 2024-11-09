@@ -1,5 +1,6 @@
 package com.example.tankmark1;
 
+import com.example.tankmark1.weapons.WeaponExhibition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -9,6 +10,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.control.ListCell;
 
 public class StartMenu extends GridPane {
     private ComboBox<String> playerSelector;
@@ -39,7 +41,6 @@ public class StartMenu extends GridPane {
         );
         setBackground(new Background(backgroundImage));
 
-
         // Title styling
         Label title = new Label("Tank Game - Main Menu");
         title.setFont(Font.font("Arial", FontWeight.BOLD, 24));
@@ -53,6 +54,28 @@ public class StartMenu extends GridPane {
         playerSelector.getItems().addAll("1", "2");
         playerSelector.setValue("1");
 
+        // Style ComboBox and ensure white text for selected item
+        playerSelector.setStyle(
+                "-fx-font-family: Arial, sans-serif;" +
+                        "-fx-font-size: 14px;" +
+                        "-fx-background-color: #333333;" +
+                        "-fx-text-fill: #FFFFFF;" +               // White text color for the selected item
+                        "-fx-border-color: #777777;" +
+                        "-fx-border-width: 1;"
+        );
+
+        // Ensure white text for selected item in dropdown
+        playerSelector.setButtonCell(new ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item != null) {
+                    setText(item);
+                    setStyle("-fx-text-fill: white;");  // White text for selected item
+                }
+            }
+        });
+
         // Weapon selection
         Label weaponLabel = new Label("Select Weapon:");
         weaponLabel.setTextFill(Color.WHITE);
@@ -61,13 +84,61 @@ public class StartMenu extends GridPane {
         weaponSelector.getItems().addAll("Cannon", "Missile", "Laser");
         weaponSelector.setValue("Cannon");
 
+        // Style ComboBox and ensure white text for selected item
+        weaponSelector.setStyle(
+                "-fx-font-family: Arial, sans-serif;" +
+                        "-fx-font-size: 14px;" +
+                        "-fx-background-color: #333333;" +
+                        "-fx-text-fill: #FFFFFF;" +               // White text color for the selected item
+                        "-fx-border-color: #777777;" +
+                        "-fx-border-width: 1;"
+        );
+
+        // Ensure white text for selected item in dropdown
+        weaponSelector.setButtonCell(new ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item != null) {
+                    setText(item);
+                    setStyle("-fx-text-fill: white;");  // White text for selected item
+                }
+            }
+        });
+
         // Map selection
         Label mapLabel = new Label("Select Map:");
         mapLabel.setTextFill(Color.WHITE);
         mapLabel.setFont(Font.font("Arial", FontWeight.SEMI_BOLD, 16));
         mapSelector = new ComboBox<>();
+
         mapSelector.getItems().addAll("Forest", "Desert", "Snow","Tiles","Maze");
+
+        mapSelector.getItems().addAll("Forest", "Desert", "Snow");
+
         mapSelector.setValue("Forest");
+
+        // Style ComboBox and ensure white text for selected item
+        mapSelector.setStyle(
+                "-fx-font-family: Arial, sans-serif;" +
+                        "-fx-font-size: 14px;" +
+                        "-fx-background-color: #333333;" +
+                        "-fx-text-fill: #FFFFFF;" +               // White text color for the selected item
+                        "-fx-border-color: #777777;" +
+                        "-fx-border-width: 1;"
+        );
+
+        // Ensure white text for selected item in dropdown
+        mapSelector.setButtonCell(new ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item != null) {
+                    setText(item);
+                    setStyle("-fx-text-fill: white;");  // White text for selected item
+                }
+            }
+        });
 
         // Sound toggle
         soundCheckbox = new CheckBox("Sound On/Off");
@@ -84,6 +155,13 @@ public class StartMenu extends GridPane {
                 mapSelector.getValue(),
                 soundCheckbox.isSelected()
         ));
+        // In your StartMenu class
+        Button exhibitionButton = new Button("Weapon Exhibition");
+        exhibitionButton.setOnAction(e -> new WeaponExhibition().showExhibition(primaryStage));
+
+// Add the button to the layout
+        add(exhibitionButton, 0, 6, 2, 1);
+
 
         // Adding components to the layout
         add(title, 0, 0, 2, 1);

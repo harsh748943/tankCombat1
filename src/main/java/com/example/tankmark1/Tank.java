@@ -1,3 +1,4 @@
+
 package com.example.tankmark1;
 
 import com.example.tankmark1.map.DestructibleObject;
@@ -90,17 +91,17 @@ public class Tank extends ImageView {
             }
         }
         if (!collisionDetected) {
-        // Ensure the tank stays within the game area boundaries
-        if (newX >= MARGIN && newX <= usableWidth - 100 + MARGIN) { // Adjust for tank width
-            setX(newX);
-        }
-        if (newY >= MARGIN && newY <= usableHeight - 100 + MARGIN) { // Adjust for tank height
-            setY(newY);
-        }
+            // Ensure the tank stays within the game area boundaries
+            if (newX >= MARGIN && newX <= usableWidth - 100 + MARGIN) { // Adjust for tank width
+                setX(newX);
+            }
+            if (newY >= MARGIN && newY <= usableHeight - 100 + MARGIN) { // Adjust for tank height
+                setY(newY);
+            }
 
-        // Rotate tank according to movement direction
-        rotateToDirection(dx, dy);
-    }}
+            // Rotate tank according to movement direction
+            rotateToDirection(dx, dy);
+        }}
 
     private void rotateToDirection(double dx, double dy) {
         // Calculate angle based on dx, dy
@@ -163,6 +164,7 @@ public class Tank extends ImageView {
             gameController.addProjectile(projectile);
         }
     }
+
 
     private void playShootingSound(String soundFileName) {
         String soundPath = getClass().getResource(soundFileName).toExternalForm();
