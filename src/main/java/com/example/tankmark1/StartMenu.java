@@ -76,8 +76,6 @@ public class StartMenu extends GridPane {
 
         mapSelector.getItems().addAll("Forest", "Desert", "Snow","Tiles","Maze");
 
-        mapSelector.getItems().addAll("Forest", "Desert", "Snow");
-
         mapSelector.setValue("Forest");
 
         // Style ComboBox and ensure white text for selected item

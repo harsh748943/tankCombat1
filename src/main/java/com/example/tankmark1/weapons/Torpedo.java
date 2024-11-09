@@ -1,6 +1,6 @@
 package com.example.tankmark1.weapons;
 
-import com.example.tankmark1.Tank;
+import com.example.tankmark1.tanks.Tank;
 
 public class Torpedo extends Projectile {
     private static int damage = 20; // Define damage for Cannon
