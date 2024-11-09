@@ -68,7 +68,7 @@ public class GameController extends Pane {
 
         // Position Player 2’s health on the right
         HBox player2HealthBox = new HBox(5, healthText2, healthBar2);
-        player2HealthBox.setLayoutX(1000); // Adjust based on scene width
+        player2HealthBox.setLayoutX(1400); // Adjust based on scene width
         player2HealthBox.setLayoutY(10);
 
 
@@ -142,6 +142,7 @@ public class GameController extends Pane {
             case "Forest" -> currentMap = new ForestMap();
             case "Desert" -> currentMap = new DesertMap();
             case "Tiles" -> currentMap = new TileMap();
+            case "Maze" -> currentMap = new MazeMap();
 
             default -> currentMap = new SnowMap();
         }
@@ -157,6 +158,10 @@ public class GameController extends Pane {
         if (currentMap instanceof TileMap tileMap) {
             destructibleObjects.addAll(tileMap.getDestructibleObjects());
         }
+
+        if (currentMap instanceof MazeMap mazeMap) {
+            destructibleObjects.addAll(mazeMap.getDestructibleObjects());
+        }
     }
 
 
@@ -170,6 +175,10 @@ public class GameController extends Pane {
             this.getChildren().add(tank2);
 
         }
+
+        if (numPlayers >= 2) {
+            tank2 = new Tank(1400, 700, "tank3.png", selectedWeapon);
+
         else {
             isRobot=true;
             setComputerControlledTank(tank2);
