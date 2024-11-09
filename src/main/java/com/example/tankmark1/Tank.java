@@ -10,12 +10,16 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Screen;
 
 import java.util.List;
 
 public class Tank extends ImageView {
+
+
     private double speed = 5;
     private String weapon;
     private long lastShotTime; // Time when the last shot was fired
@@ -48,6 +52,17 @@ public class Tank extends ImageView {
     public boolean isDestroyed() {
         return health <= 0;
     }
+
+
+    public Circle createShieldCircle() {
+        Circle shieldCircle = new Circle(getFitWidth() / 2 + 10);
+        shieldCircle.setFill(Color.TRANSPARENT);
+        shieldCircle.setStroke(Color.BLUE); // Outline color for shield
+        shieldCircle.setStrokeWidth(4);
+        shieldCircle.setVisible(false); // Hidden by default
+        return shieldCircle;
+    }
+
 
     public void move(double dx, double dy, List<DestructibleObject> destructibleObjects) {
         System.out.println("Moving with dx: " + dx + ", dy: " + dy + ", speed: " + speed);

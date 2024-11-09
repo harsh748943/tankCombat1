@@ -66,7 +66,7 @@ public class StartMenu extends GridPane {
         mapLabel.setTextFill(Color.WHITE);
         mapLabel.setFont(Font.font("Arial", FontWeight.SEMI_BOLD, 16));
         mapSelector = new ComboBox<>();
-        mapSelector.getItems().addAll("Forest", "Desert", "Snow","Tiles");
+        mapSelector.getItems().addAll("Forest", "Desert", "Snow","Tiles","Maze");
         mapSelector.setValue("Forest");
 
         // Sound toggle
