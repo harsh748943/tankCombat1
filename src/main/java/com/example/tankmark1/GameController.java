@@ -2,6 +2,8 @@ package com.example.tankmark1;
 
 import com.example.tankmark1.map.*;
 import com.example.tankmark1.map.Map;
+import com.example.tankmark1.tanks.ComputerTank;
+import com.example.tankmark1.tanks.Tank;
 import com.example.tankmark1.weapons.Explosion;
 import com.example.tankmark1.weapons.Projectile;
 import javafx.animation.KeyFrame;
@@ -13,8 +15,6 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.media.AudioClip;
-import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -28,25 +28,27 @@ public class GameController extends Pane {
     private int numPlayers;
     private String selectedWeapon;
     private String selectedMap;
+    private GameSoundManager soundManager;
     private boolean soundOn;
     private String level;
     private MediaPlayer mediaPlayer;
     private TankGame mainApp;  // Reference to the main application
     public Tank tank1;
     public Tank tank2;
-    public Tank tank3;
     private ProgressBar healthBar1, healthBar2;
     private Text healthText1, healthText2;
     private Text winnerText;
     private Set<KeyCode> pressedKeys = new HashSet<>();
     private List<Projectile> projectiles = new ArrayList<>();
     private List<DestructibleObject> destructibleObjects = new ArrayList<>();
-    private boolean gameOver = false;
+    public boolean gameOver = false;
     private Text countdownText;  // Countdown text display ke liye
-    private boolean countdownComplete = false;  // Game tabhi start hoga jab countdown complete hoga
+    public boolean countdownComplete = false;  // Game tabhi start hoga jab countdown complete hoga
     private Thread movementThread;
     private boolean isRobot=false;
-    private AudioClip tukTukSound;
+    private ComputerTank computerTank;
+
+
     public GameController(int numPlayers, String selectedWeapon, String selectedMap, boolean soundOn, TankGame mainApp,String level) {
         this.numPlayers = numPlayers;
         this.selectedWeapon = selectedWeapon;
@@ -54,19 +56,16 @@ public class GameController extends Pane {
         this.soundOn = soundOn;
         this.mainApp = mainApp;  // Assign mainApp reference
         this.level=level;
+        soundManager = new GameSoundManager();
+
         setUpMap();
         setUpTanks();
         setUpHealthBars();
         startCountdown();
-    }
-    private void loadSounds() {
-        // Load tuk tuk sound (ensure the path is correct relative to your project structure)
-        tukTukSound = new AudioClip(getClass().getResource("/tuktuk.mp3").toString());
+
     }
 
     private void startCountdown() {
-        // Make sure sounds are loaded before countdown starts
-        loadSounds();
 
         countdownText = new Text();
         countdownText.setFont(new Font(50));
@@ -92,21 +91,19 @@ public class GameController extends Pane {
         Timeline countdown = new Timeline(
                 new KeyFrame(Duration.seconds(1), event -> {
                     countdownText.setText("3");
-                    tukTukSound.play();  // Play tuk tuk sound
+                    soundManager.playTukTuk();  // Play tuk tuk sound
                 }),
                 new KeyFrame(Duration.seconds(2), event -> {
                     countdownText.setText("2");
-//                    tukTukSound.play();  // Play tuk tuk sound
                 }),
                 new KeyFrame(Duration.seconds(3), event -> {
                     countdownText.setText("1");
-//                    tukTukSound.play();  // Play tuk tuk sound
                 }),
                 new KeyFrame(Duration.seconds(4), event -> {
                     countdownText.setLayoutX(620); // Countdown text ko center mein rakhne ke liye
                     countdownText.setLayoutY(400);
                     countdownText.setText("Let's Attack!!");  // Display "आक्रमण"
-         tukTukSound.stop();
+         soundManager.stopTukTuk();
                     Timeline removeText = new Timeline(
                             new KeyFrame(Duration.seconds(1), e -> {
                                 this.getChildren().remove(countdownText); // Remove countdown text after 1 second
@@ -121,7 +118,6 @@ public class GameController extends Pane {
         countdown.setCycleCount(1);
         countdown.play();
     }
-
     private void setUpHealthBars() {
         healthBar1 = new ProgressBar(1);
         healthBar1.setStyle("-fx-accent: red;");
@@ -132,7 +128,6 @@ public class GameController extends Pane {
         player1HealthBox.setLayoutX(10);
         player1HealthBox.setLayoutY(10);
 
-
         healthBar2 = new ProgressBar(1);
         healthBar2.setStyle("-fx-accent: BLUE;");
         healthText2 = new Text("100%");
@@ -141,8 +136,6 @@ public class GameController extends Pane {
         HBox player2HealthBox = new HBox(5, healthText2, healthBar2);
         player2HealthBox.setLayoutX(1400); // Adjust based on scene width
         player2HealthBox.setLayoutY(10);
-
-
         this.getChildren().addAll(player1HealthBox,player2HealthBox);
 
         winnerText = new Text();
@@ -165,7 +158,7 @@ public class GameController extends Pane {
         healthText2.setText((int) health2 + "%");
     }
 
-    private void checkForWin() {
+    public void checkForWin() {
         if (tank1.isDestroyed()) {
             // Show destroyed image for tank1
             tank1.setImage(new Image("/tankBlast.png"));
@@ -222,10 +215,7 @@ public class GameController extends Pane {
             movementThread.interrupt();
         }
 
-        // Stop background music if playing
-        if (mediaPlayer != null) {
-            mediaPlayer.stop();
-        }
+        soundManager.stopMusic();
 
         // Display winner message and await Enter key to return to menu
         Platform.runLater(() -> {
@@ -284,112 +274,16 @@ public class GameController extends Pane {
             }
             else {
                 isRobot=true;
-                setComputerControlledTank(tank2);
+                computerTank=new ComputerTank(tank2,tank1,this,level,destructibleObjects);
+                computerTank.setComputerControlled();
 
                 this.getChildren().add(tank2);
             }
     }
 
-
-    private void setComputerControlledTank(Tank computerTank) {
-        new Thread(() -> {
-            Random random = new Random();
-            long lastShootTime = 0;
-            long lastMoveTime = 0;
-
-            // Define speed and shooting interval based on level
-            double moveSpeed = 3.5;  // Default move speed (Medium level)
-            long shootInterval = 1500;  // Default shoot interval (Medium level)
-
-            switch (level) {
-                case "Easy":
-                    moveSpeed = 2;  // Slow speed for easy
-                    shootInterval = 3000;  // Shoot every 3 seconds for easy
-                    break;
-                case "Hard":
-                    moveSpeed = 5.5;  // Fast speed for hard
-                    shootInterval = 500;  // Shoot every 1 second for hard
-                    break;
-                // Default is Medium (no need to modify)
-            }
-
-            while (!gameOver) {  // Check game over status
-                try {
-                    // Wait until countdown is complete before starting tank actions
-                    if (!countdownComplete) {
-                        Thread.sleep(100); // Small sleep to prevent tight looping
-                        continue; // Skip the rest of the loop if countdown is not complete
-                    }
-
-                    long currentTime = System.currentTimeMillis();
-                    boolean shouldMove = currentTime - lastMoveTime > 100;  // Move every 0.1 second (smooth)
-                    boolean shouldShoot = currentTime - lastShootTime > shootInterval;  // Adjusted shooting interval
-
-                    boolean tank1Destroyed = tank1 == null || tank1.isDestroyed();
-                    if (tank1Destroyed) {
-                        shouldShoot = false;
-                    }
-
-                    if (shouldMove) {
-                        final double[] dx = {0}, dy = {0};  // Final dx and dy for lambda expression
-
-                        if (!tank1Destroyed && tank1 != null) {
-                            // Calculate direction to tank1
-                            double angleToTank1 = Math.toDegrees(Math.atan2(
-                                    tank1.getY() - computerTank.getY(),
-                                    tank1.getX() - computerTank.getX()
-                            ));
-
-                            // Distance from tank1 to tank2
-                            double distanceToTank1 = Math.sqrt(
-                                    Math.pow(tank1.getX() - computerTank.getX(), 2) +
-                                            Math.pow(tank1.getY() - computerTank.getY(), 2)
-                            );
-
-                            if (distanceToTank1 < 200) {  // If tank1 is very close, dodge
-                                // Move in a random direction
-                                dx[0] = random.nextDouble() * 1 - 1;  // Random between -1 and 1
-                                dy[0] = random.nextDouble() * 1 - 1;
-                            } else {
-                                // Otherwise, move towards tank1
-                                double radians = Math.toRadians(angleToTank1);
-                                dx[0] = Math.cos(radians) * moveSpeed;  // Move with adjusted speed
-                                dy[0] = Math.sin(radians) * moveSpeed;
-                            }
-
-                            // Rotate the tank to face tank1
-                            Platform.runLater(() -> computerTank.setRotate(angleToTank1));
-                        } else {
-                            // Random movement if tank1 is destroyed or far away
-                            dx[0] = random.nextDouble() * 1 - 1;  // Random between -1 and 1
-                            dy[0] = random.nextDouble() * 1 - 1;
-                        }
-
-                        // Move the tank using the updated dx and dy values
-                        Platform.runLater(() -> computerTank.move(dx[0], dy[0], destructibleObjects));
-                        lastMoveTime = currentTime;  // Update last move time
-                    }
-
-                    if (shouldShoot && tank1 != null && !tank1Destroyed) {
-                        // Shoot after the specified interval
-                        Platform.runLater(() -> computerTank.shoot(this));
-                        lastShootTime = currentTime;  // Update last shoot time
-                    }
-
-                    // Sleep to allow for smoother movement and shooting
-                    Thread.sleep(50);  // 50ms delay to make the movement smooth
-
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    break;
-                }
-            }
-        }).start();
-    }
-
     public void startGame() {
         if (soundOn) {
-            playBackgroundMusic();
+            soundManager.playBackgroundMusic();
         }
 
         this.setOnKeyPressed(this::handleKeyPressed);
@@ -595,15 +489,6 @@ public class GameController extends Pane {
         Platform.runLater(() -> tank.move(dx, dy,destructibleObjects));
     }
 
-    private void playBackgroundMusic() {
-        if (mediaPlayer == null) {
-            String musicFilePath = getClass().getResource("/background.mp3").toExternalForm();
-            Media sound = new Media(musicFilePath);
-            mediaPlayer = new MediaPlayer(sound);
-            mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
-        }
-        mediaPlayer.play();
-    }
 
     public void addProjectile(Projectile projectile) {
         projectiles.add(projectile);
@@ -615,5 +500,19 @@ public class GameController extends Pane {
             getChildren().remove(destructibleObject); // Remove from the scene graph
             destructibleObjects.remove(destructibleObject); // Remove from tracking list
         });
+    }
+
+    public Tank getTank1() {
+        return tank1;
+    }
+
+    public Tank getTank2() {
+        return tank2;
+    }
+
+
+
+    public  List<DestructibleObject> getDestructibleObjects() {
+        return destructibleObjects;
     }
 }

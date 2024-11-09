@@ -1,6 +1,6 @@
 package com.example.tankmark1.weapons;
 
-import com.example.tankmark1.Tank;
+import com.example.tankmark1.tanks.Tank;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 

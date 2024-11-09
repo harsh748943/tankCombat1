@@ -1,6 +1,7 @@
 
-package com.example.tankmark1;
+package com.example.tankmark1.tanks;
 
+import com.example.tankmark1.GameController;
 import com.example.tankmark1.map.DestructibleObject;
 import com.example.tankmark1.weapons.Cannon;
 import com.example.tankmark1.weapons.Missile;
@@ -27,6 +28,7 @@ public class Tank extends ImageView {
     private static final long SHOOT_DELAY = 1000; // Minimum time delay between shots (ms)
     private int health = 100; // Health attribute
 
+
     // Margins in pixels (2 cm converted to pixels)
     private static final double MARGIN = 0.5 / 2.54 * 96; // 2 cm to pixels (assuming 96 DPI)
 
@@ -39,6 +41,7 @@ public class Tank extends ImageView {
         setPreserveRatio(true);
         this.weapon = weapon;
         this.lastShotTime = 0; // Initialize last shot time
+
     }
 
     public int getHealth() {
