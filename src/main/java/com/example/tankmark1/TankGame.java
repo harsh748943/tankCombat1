@@ -14,23 +14,22 @@ public class TankGame extends Application {
     Rectangle2D screenBounds = Screen.getPrimary().getBounds();
     double screenWidth = screenBounds.getWidth();
     double screenHeight = screenBounds.getHeight();
+
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
-
-
-
-
-        // Initialize the main menu and set up the initial scene
-
-        startMenu = new StartMenu(primaryStage, this);
-        mainMenuScene = new Scene(startMenu, screenWidth, screenHeight);
-
         primaryStage.setTitle("Tank Game");
-        primaryStage.setScene(mainMenuScene);
-        // primaryStage.setFullScreen(true);
-        primaryStage.setMaximized(true); // Maximize the window
-        primaryStage.show();
+
+        // Create and show the splash screen
+        SplashScreen splashScreen = new SplashScreen();
+        splashScreen.showSplash(primaryStage, () -> {
+            // After the splash screen, show the StartMenu
+            startMenu = new StartMenu(primaryStage, this);
+            mainMenuScene = new Scene(startMenu, screenWidth, screenHeight);
+            primaryStage.setScene(mainMenuScene);
+            primaryStage.setMaximized(true); // Maximize the window
+            primaryStage.show();
+        });
     }
 
     // Method to start the game, creating a new GameController with selected settings
