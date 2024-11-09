@@ -7,6 +7,7 @@ import java.util.List;
 
 public class DestructibleObject extends ImageView {
     private int health;
+    private boolean isDestroyed = false;
     private List<DestructibleObject> destructibleList;
 
     public DestructibleObject(String imagePath, int width, int height, List<DestructibleObject> destructibleList) {
@@ -26,7 +27,13 @@ public class DestructibleObject extends ImageView {
         return health;
     }
 
+    public boolean isDestroyed() {
+        return isDestroyed;
+    }
+
+
     private void destroy() {
+        isDestroyed = true;
         setVisible(false); // Make the object disappear when destroyed
 
         Platform.runLater(() -> {

@@ -65,7 +65,7 @@ public class GameController extends Pane {
 
         // Position Player 2’s health on the right
         HBox player2HealthBox = new HBox(5, healthText2, healthBar2);
-        player2HealthBox.setLayoutX(650); // Adjust based on scene width
+        player2HealthBox.setLayoutX(1000); // Adjust based on scene width
         player2HealthBox.setLayoutY(10);
 
 
@@ -133,6 +133,8 @@ public class GameController extends Pane {
         switch (selectedMap) {
             case "Forest" -> currentMap = new ForestMap();
             case "Desert" -> currentMap = new DesertMap();
+            case "Tiles" -> currentMap = new TileMap();
+
             default -> currentMap = new SnowMap();
         }
         this.getChildren().add(currentMap);
@@ -141,16 +143,22 @@ public class GameController extends Pane {
         if (currentMap instanceof ForestMap forestMap) {
             destructibleObjects.addAll(forestMap.getDestructibleObjects());
         }
+        if (currentMap instanceof SnowMap snowMap) {
+            destructibleObjects.addAll(snowMap.getDestructibleObjects());
+        }
+        if (currentMap instanceof TileMap tileMap) {
+            destructibleObjects.addAll(tileMap.getDestructibleObjects());
+        }
     }
 
 
     private void setUpTanks() {
         if (numPlayers >= 1) {
-            tank1 = new Tank(100, 100, "tank1.png", selectedWeapon);
+            tank1 = new Tank(100, 100, "tank2.png", selectedWeapon);
             this.getChildren().add(tank1);
         }
         if (numPlayers >= 2) {
-            tank2 = new Tank(700, 500, "tank2.png", selectedWeapon);
+            tank2 = new Tank(1000, 600, "tank3.png", selectedWeapon);
             this.getChildren().add(tank2);
         }
     }
@@ -344,6 +352,8 @@ public class GameController extends Pane {
         if (pressedKeys.contains(KeyCode.Q)) tank1.rotate(-5); // Rotate counterclockwise
         if (pressedKeys.contains(KeyCode.E)) tank1.rotate(5); // Rotate clockwise
 
+        if (pressedKeys.contains(KeyCode.I)) tank2.rotate(-5); // Rotate counterclockwise
+        if (pressedKeys.contains(KeyCode.P)) tank2.rotate(5); // Rotate clockwise
 
         if (tank1 != null) {
             if (pressedKeys.contains(KeyCode.W)) updateTankPosition(tank1, 0, -1);
@@ -361,8 +371,10 @@ public class GameController extends Pane {
         }
     }
 
+
+
     private void updateTankPosition(Tank tank, double dx, double dy) {
-        Platform.runLater(() -> tank.move(dx, dy));
+        Platform.runLater(() -> tank.move(dx, dy,destructibleObjects));
     }
 
     private void playBackgroundMusic() {
