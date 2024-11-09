@@ -306,16 +306,17 @@ public class GameController extends Pane {
                 if (projectile != other && projectile.collidesWith(other)) {
                     // Create an explosion at the point of collision
                     // If you find that the explosion is misaligned, adjust like this:
-                    double adjustedX = projectile.getX() - (256 / 2);  // Center the explosion
-                    double adjustedY = projectile.getY() - (256 / 2); // Center the explosion
+                    double adjustedX = projectile.getX() - (128 / 2);  // Center the explosion
+                    double adjustedY = projectile.getY() - (128 / 2); // Center the explosion
                     Explosion explosion = new Explosion(
-                            adjustedX, adjustedY,  // Position of the explosion
-                            "/explosionL1.png",  // Path to explosion sprite sheet
-                            "/explosionSound.mp3",  // Path to explosion sound file
-                            8, 7,  // Columns and rows of the sprite sheet
-                            256, 256,  // Frame width and height
-                            this,// The node to shake during the explosion
-                            true
+                            adjustedX, adjustedY,
+                            "/explosionL1.png",
+                            "/explosionSound.mp3",
+                            8,
+                            7,
+                            256,
+                           256,256,256,
+                            this, true
                     );
                     Platform.runLater(() -> getChildren().add(explosion));
 
@@ -333,19 +334,8 @@ public class GameController extends Pane {
                 if (checkCollisionForObject(projectile, destructible)) {
                     destructible.takeDamage(projectile.getDamage());
 
-                    // Create explosion effect
-                    double adjustedX = projectile.getX() - 40;  // Adjust as needed
-                    double adjustedY = projectile.getY() - 40;  // Adjust as needed
-                    Explosion explosion = new Explosion(
-                            adjustedX, adjustedY,
-                            "/torpedoHitL1.png",
-                            "/explosionSound.mp3",
-                            5, 2,
-                            80, 80,
-                            this,
-                            true
-                    );
-                    Platform.runLater(() -> getChildren().add(explosion));
+
+                    createExplosion(projectile);
 
                     // Remove projectile after collision
                     removeProjectile(projectile);
@@ -367,18 +357,8 @@ public class GameController extends Pane {
                 updateHealthBars();
                 removeProjectile(projectile);
                 checkForWin();
-                double adjustedX = projectile.getX() - (80 / 2);  // Center the explosion
-                double adjustedY = projectile.getY() - (80/ 2); // Center the explosion
-                Explosion explosion = new Explosion(
-                        adjustedX, adjustedY,  // Position of the explosion
-                        "/torpedoHitL1.png",  // Path to explosion sprite sheet
-                        "/explosionSound.mp3",  // Path to explosion sound file
-                        5, 2,  // Columns and rows of the sprite sheet
-                        80, 80,  // Frame width and height
-                        this,// The node to shake during the explosion
-                        true
-                );
-                Platform.runLater(() -> getChildren().add(explosion));
+
+                createExplosion(projectile);
             }
 
             if (tank2 != null && checkCollision(projectile, tank2) && projectile.getOwner() != tank2) {
@@ -386,18 +366,8 @@ public class GameController extends Pane {
                 updateHealthBars();
                 removeProjectile(projectile);
                 checkForWin();
-                double adjustedX = projectile.getX() - (80 / 2);  // Center the explosion
-                double adjustedY = projectile.getY() - (80 / 2); // Center the explosion
-                Explosion explosion = new Explosion(
-                        adjustedX, adjustedY,  // Position of the explosion
-                        "/torpedoHitL1.png",  // Path to explosion sprite sheet
-                        "/explosionSound.mp3",  // Path to explosion sound file
-                        5, 2,  // Columns and rows of the sprite sheet
-                        80, 80,  // Frame width and height
-                        this,// The node to shake during the explosion
-                        true
-                );
-                Platform.runLater(() -> getChildren().add(explosion));
+
+               createExplosion(projectile);
             }
 
 
@@ -406,6 +376,26 @@ public class GameController extends Pane {
             }
         }
     }
+
+
+    private void createExplosion(Projectile projectile) {
+        double adjustedX = projectile.getX() - projectile.getExplosionFrameWidth()/2;
+        double adjustedY = projectile.getY() - projectile.getExplosionFrameHeight()/2;
+        Explosion explosion = new Explosion(
+                adjustedX, adjustedY,
+                projectile.getExplosionImagePath(),
+                projectile.getExplosionSoundPath(),
+                projectile.getExplosionFrameColomn(),
+                projectile.getExplosionFrameRow(),
+                projectile.getExplosionFrameWidth(),
+                projectile.getExplosionFrameHeight(),
+                projectile.getExplosionFrameWidth(),
+                projectile.getExplosionFrameHeight(),
+                this, true
+        );
+        Platform.runLater(() -> getChildren().add(explosion));
+    }
+
 
     private boolean checkCollision(Projectile projectile, Tank tank) {
         Rectangle projectileBounds = new Rectangle(projectile.getX(), projectile.getY(), projectile.getFitWidth(), projectile.getFitHeight());
