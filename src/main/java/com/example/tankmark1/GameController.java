@@ -165,17 +165,17 @@ public class GameController extends Pane {
         this.getChildren().add(tank1);
 
 
-            tank2 = new Tank(1300, 700, "tank3.png", selectedWeapon);
-            if(numPlayers>1) {
-                this.getChildren().add(tank2);
+        tank2 = new Tank(1300, 700, "tank3.png", selectedWeapon);
+        if(numPlayers>1) {
+            this.getChildren().add(tank2);
 
-            }
-            else {
-                isRobot=true;
-                setComputerControlledTank(tank2);
+        }
+        else {
+            isRobot=true;
+            setComputerControlledTank(tank2);
 
-                this.getChildren().add(tank2);
-            }
+            this.getChildren().add(tank2);
+        }
 
 
 

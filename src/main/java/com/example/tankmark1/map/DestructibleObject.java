@@ -49,4 +49,3 @@ public class DestructibleObject extends ImageView {
         // Additional destruction logic if needed (e.g., animations, sound effects)
     }
 }
-
