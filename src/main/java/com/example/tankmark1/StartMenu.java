@@ -1,5 +1,4 @@
 package com.example.tankmark1;
-
 import com.example.tankmark1.weapons.WeaponExhibition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
