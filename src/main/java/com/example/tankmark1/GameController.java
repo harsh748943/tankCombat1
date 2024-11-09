@@ -1,9 +1,8 @@
 package com.example.tankmark1;
 
-import com.example.tankmark1.map.DesertMap;
-import com.example.tankmark1.map.ForestMap;
+import com.example.tankmark1.map.*;
 import com.example.tankmark1.map.Map;
-import com.example.tankmark1.map.SnowMap;
+import com.example.tankmark1.weapons.Explosion;
 import com.example.tankmark1.weapons.Projectile;
 import javafx.application.Platform;
 import javafx.scene.control.ProgressBar;
@@ -33,6 +32,8 @@ public class GameController extends Pane {
     private Text winnerText;
     private Set<KeyCode> pressedKeys = new HashSet<>();
     private List<Projectile> projectiles = new ArrayList<>();
+    private List<DestructibleObject> destructibleObjects = new ArrayList<>();
+
     private Thread movementThread;
 
     public GameController(int numPlayers, String selectedWeapon, String selectedMap, boolean soundOn, TankGame mainApp) {
@@ -49,7 +50,7 @@ public class GameController extends Pane {
 
     private void setUpHealthBars() {
         healthBar1 = new ProgressBar(1);
-        healthBar1.setStyle("-fx-accent: green;");
+        healthBar1.setStyle("-fx-accent: red;");
         healthText1 = new Text("100%");
 
         // Position Player 1’s health on the left
@@ -59,7 +60,7 @@ public class GameController extends Pane {
 
 
         healthBar2 = new ProgressBar(1);
-        healthBar2.setStyle("-fx-accent: green;");
+        healthBar2.setStyle("-fx-accent: BLUE;");
         healthText2 = new Text("100%");
 
         // Position Player 2’s health on the right
@@ -135,7 +136,13 @@ public class GameController extends Pane {
             default -> currentMap = new SnowMap();
         }
         this.getChildren().add(currentMap);
+
+        // Add destructible objects to the list for collision checking
+        if (currentMap instanceof ForestMap forestMap) {
+            destructibleObjects.addAll(forestMap.getDestructibleObjects());
+        }
     }
+
 
     private void setUpTanks() {
         if (numPlayers >= 1) {
@@ -181,11 +188,85 @@ public class GameController extends Pane {
         for (Projectile projectile : new ArrayList<>(projectiles)) {
             projectile.move();
 
+
+            // Check for collisions with other projectiles
+            for (Projectile other : new ArrayList<>(projectiles)) {
+                if (projectile != other && projectile.collidesWith(other)) {
+                    // Create an explosion at the point of collision
+                    // If you find that the explosion is misaligned, adjust like this:
+                    double adjustedX = projectile.getX() - (256 / 2);  // Center the explosion
+                    double adjustedY = projectile.getY() - (256 / 2); // Center the explosion
+                    Explosion explosion = new Explosion(
+                            adjustedX, adjustedY,  // Position of the explosion
+                            "/explosionL1.png",  // Path to explosion sprite sheet
+                            "/explosionSound.mp3",  // Path to explosion sound file
+                            8, 7,  // Columns and rows of the sprite sheet
+                            256, 256,  // Frame width and height
+                            this,// The node to shake during the explosion
+                            true
+                    );
+                    Platform.runLater(() -> getChildren().add(explosion));
+
+
+                    // Remove both projectiles on collision
+                    removeProjectile(projectile);
+                    removeProjectile(other);
+                    break;
+                }
+            }
+
+
+
+            for (DestructibleObject destructible : new ArrayList<>(destructibleObjects)) {
+                if (checkCollisionForObject(projectile, destructible)) {
+                    destructible.takeDamage(projectile.getDamage());
+
+                    // Create explosion effect
+                    double adjustedX = projectile.getX() - 40;  // Adjust as needed
+                    double adjustedY = projectile.getY() - 40;  // Adjust as needed
+                    Explosion explosion = new Explosion(
+                            adjustedX, adjustedY,
+                            "/torpedoHitL1.png",
+                            "/explosionSound.mp3",
+                            5, 2,
+                            80, 80,
+                            this,
+                            true
+                    );
+                    Platform.runLater(() -> getChildren().add(explosion));
+
+                    // Remove projectile after collision
+                    removeProjectile(projectile);
+
+                    // Remove destructible object from list and scene if destroyed
+                    if (destructible.getHealth() <= 0) {
+                        removeDestructibleObject(destructible);
+                    }
+
+                    break;
+                }
+            }
+
+
+
+
             if (tank1 != null && checkCollision(projectile, tank1) && projectile.getOwner() != tank1) {
                 tank1.takeDamage(projectile.getDamage());
                 updateHealthBars();
                 removeProjectile(projectile);
                 checkForWin();
+                double adjustedX = projectile.getX() - (80 / 2);  // Center the explosion
+                double adjustedY = projectile.getY() - (80/ 2); // Center the explosion
+                Explosion explosion = new Explosion(
+                        adjustedX, adjustedY,  // Position of the explosion
+                        "/torpedoHitL1.png",  // Path to explosion sprite sheet
+                        "/explosionSound.mp3",  // Path to explosion sound file
+                        5, 2,  // Columns and rows of the sprite sheet
+                        80, 80,  // Frame width and height
+                        this,// The node to shake during the explosion
+                        true
+                );
+                Platform.runLater(() -> getChildren().add(explosion));
             }
 
             if (tank2 != null && checkCollision(projectile, tank2) && projectile.getOwner() != tank2) {
@@ -193,7 +274,20 @@ public class GameController extends Pane {
                 updateHealthBars();
                 removeProjectile(projectile);
                 checkForWin();
+                double adjustedX = projectile.getX() - (80 / 2);  // Center the explosion
+                double adjustedY = projectile.getY() - (80 / 2); // Center the explosion
+                Explosion explosion = new Explosion(
+                        adjustedX, adjustedY,  // Position of the explosion
+                        "/torpedoHitL1.png",  // Path to explosion sprite sheet
+                        "/explosionSound.mp3",  // Path to explosion sound file
+                        5, 2,  // Columns and rows of the sprite sheet
+                        80, 80,  // Frame width and height
+                        this,// The node to shake during the explosion
+                        true
+                );
+                Platform.runLater(() -> getChildren().add(explosion));
             }
+
 
             if (isOutOfBounds(projectile)) {
                 removeProjectile(projectile);
@@ -206,6 +300,11 @@ public class GameController extends Pane {
         Rectangle tankBounds = new Rectangle(tank.getX(), tank.getY(), tank.getFitWidth(), tank.getFitHeight());
         return projectileBounds.getBoundsInParent().intersects(tankBounds.getBoundsInParent());
     }
+
+    private boolean checkCollisionForObject(Projectile projectile, DestructibleObject destructible) {
+        return projectile.getBoundsInParent().intersects(destructible.getBoundsInParent());
+    }
+
 
     private boolean isOutOfBounds(Projectile projectile) {
         return projectile.getX() < 0 || projectile.getY() < 0 || projectile.getX() > getWidth() || projectile.getY() > getHeight();
@@ -241,6 +340,11 @@ public class GameController extends Pane {
     }
 
     private void moveTanks() {
+
+        if (pressedKeys.contains(KeyCode.Q)) tank1.rotate(-5); // Rotate counterclockwise
+        if (pressedKeys.contains(KeyCode.E)) tank1.rotate(5); // Rotate clockwise
+
+
         if (tank1 != null) {
             if (pressedKeys.contains(KeyCode.W)) updateTankPosition(tank1, 0, -1);
             if (pressedKeys.contains(KeyCode.S)) updateTankPosition(tank1, 0, 1);
@@ -275,4 +379,12 @@ public class GameController extends Pane {
         projectiles.add(projectile);
         Platform.runLater(() -> getChildren().add(projectile));
     }
+
+    public void removeDestructibleObject(DestructibleObject destructibleObject) {
+        Platform.runLater(() -> {
+            getChildren().remove(destructibleObject); // Remove from the scene graph
+            destructibleObjects.remove(destructibleObject); // Remove from tracking list
+        });
+    }
+
 }

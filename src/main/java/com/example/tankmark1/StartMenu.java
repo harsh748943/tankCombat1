@@ -24,10 +24,21 @@ public class StartMenu extends GridPane {
 
         // Load and set the background image
         BackgroundImage backgroundImage = new BackgroundImage(
-                new javafx.scene.image.Image("TankBg.jpg", 1260, 720, false, true),
-                BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
-                BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
+                new javafx.scene.image.Image("TankBG4.jpg"),  // Load the image without preset dimensions
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundRepeat.NO_REPEAT,
+                BackgroundPosition.CENTER,
+                new BackgroundSize(
+                        BackgroundSize.AUTO,
+                        BackgroundSize.AUTO,
+                        false,
+                        false,
+                        true,   // Scale width to fit screen
+                        true    // Scale height to fit screen
+                )
+        );
         setBackground(new Background(backgroundImage));
+
 
         // Title styling
         Label title = new Label("Tank Game - Main Menu");

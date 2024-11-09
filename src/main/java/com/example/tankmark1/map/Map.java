@@ -1,19 +1,14 @@
 package com.example.tankmark1.map;
 
+import javafx.geometry.Rectangle2D;
 import javafx.scene.layout.Pane;
-import java.util.List;
+import javafx.stage.Screen;
 
 public abstract class Map extends Pane {
-
     public Map() {
-        setPrefSize(1260, 720);
-    }
+        Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
 
-    /**
-     * Abstract method to get the boundaries of the map.
-     * Each subclass should implement this to return the specific boundaries.
-     *
-     * @return a list of Boundary objects representing the map's boundaries
-     */
-    public abstract List<Boundary> getBoundaries();
+        // Set the Pane size to the full screen dimensions
+        setPrefSize(screenBounds.getWidth(), screenBounds.getHeight());
+    }
 }

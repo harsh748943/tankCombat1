@@ -30,7 +30,28 @@
       <version>21</version>
     </dependency>
 
-<dependency>
+
+
+      <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-controls</artifactId>
+        <version>20.0.1</version> <!-- Use the latest version -->
+      </dependency>
+      <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-media</artifactId>
+        <version>20.0.1</version>
+      </dependency>
+      <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-graphics</artifactId>
+        <version>20.0.1</version>
+      </dependency>
+      <!-- Add other JavaFX modules as needed -->
+
+
+
+    <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
       <version>${junit.version}</version>
@@ -41,7 +62,13 @@
       <artifactId>junit-jupiter-engine</artifactId>
       <version>${junit.version}</version>
       <scope>test</scope>
-    </dependency>  </dependencies>
+    </dependency>
+    <dependency>
+      <groupId>com.vladsch.flexmark</groupId>
+      <artifactId>flexmark</artifactId>
+      <version>0.42.14</version>
+    </dependency>
+  </dependencies>
 
   <build>
     <plugins>

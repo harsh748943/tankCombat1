@@ -4,10 +4,12 @@ import com.example.tankmark1.weapons.Cannon;
 import com.example.tankmark1.weapons.Missile;
 import com.example.tankmark1.weapons.Projectile;
 import com.example.tankmark1.weapons.Torpedo;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.stage.Screen;
 
 public class Tank extends ImageView {
     private double speed = 5;
@@ -16,12 +18,15 @@ public class Tank extends ImageView {
     private static final long SHOOT_DELAY = 1000; // Minimum time delay between shots (ms)
     private int health = 100; // Health attribute
 
+    // Margins in pixels (2 cm converted to pixels)
+    private static final double MARGIN = 1.5 / 2.54 * 96; // 2 cm to pixels (assuming 96 DPI)
+
     public Tank(double x, double y, String imagePath, String weapon) {
         super(new Image(imagePath));
         setX(x);
         setY(y);
-        setFitWidth(50);
-        setFitHeight(50);
+        setFitWidth(100);
+        setFitHeight(100);
         setPreserveRatio(true);
         this.weapon = weapon;
         this.lastShotTime = 0; // Initialize last shot time
@@ -45,11 +50,20 @@ public class Tank extends ImageView {
         double newX = getX() + dx * speed;
         double newY = getY() + dy * speed;
 
+        // Get the full screen dimensions
+        Rectangle2D screenBounds = Screen.getPrimary().getBounds();
+        double screenWidth = screenBounds.getWidth();
+        double screenHeight = screenBounds.getHeight();
+
+        // Calculate usable width and height
+        double usableWidth = screenWidth - (2 * MARGIN);
+        double usableHeight = screenHeight - (2 * MARGIN);
+
         // Ensure the tank stays within the game area boundaries
-        if (newX >= 0 && newX <= 750) { // Adjust based on game area width and tank size
+        if (newX >= MARGIN && newX <= usableWidth - 100 + MARGIN) { // Adjust for tank width
             setX(newX);
         }
-        if (newY >= 0 && newY <= 550) { // Adjust based on game area height and tank size
+        if (newY >= MARGIN && newY <= usableHeight - 100 + MARGIN) { // Adjust for tank height
             setY(newY);
         }
 
@@ -84,49 +98,51 @@ public class Tank extends ImageView {
                     projectileImagePath = "cannonball.png"; // Path for cannonball image
                     projectileSpeed = 8;
                     projectileSize = 30;
-                    projectile = new Cannon(getX() + 25, getY(),dx * projectileSpeed, dy * projectileSpeed,angle,this);
+                    projectile = new Cannon(getX() + 25, getY(), dx * projectileSpeed, dy * projectileSpeed, angle, this);
                     playShootingSound("/laserSound.wav"); // Play sound
                     break;
                 case "Missile":
                     projectileImagePath = "rocket.png"; // Path for missile image
                     projectileSpeed = 1;
                     projectileSize = 50;
-                    projectile = new Missile(getX() + 25, getY(),dx * projectileSpeed, dy * projectileSpeed,angle,this);
+                    projectile = new Missile(getX() + 25, getY(), dx * projectileSpeed, dy * projectileSpeed, angle, this);
                     playShootingSound("/levelBossTorpedo.wav"); // Play sound
                     break;
                 case "Laser":
                     projectileImagePath = "laser.png"; // Path for laser image
                     projectileSpeed = 4;
                     projectileSize = 50;
-                    projectile = new Torpedo(getX() + 25, getY(),dx * projectileSpeed, dy * projectileSpeed,angle,this);
+                    projectile = new Torpedo(getX() + 25, getY(), dx * projectileSpeed, dy * projectileSpeed, angle, this);
                     playShootingSound("/levelBossRocket.wav"); // Play sound
                     break;
                 default:
                     projectileImagePath = "default.png"; // Fallback image
                     projectileSpeed = 10;
                     projectileSize = 20;
-                    projectile = new Missile(getX() + 25, getY(),dx * projectileSpeed, dy * projectileSpeed,angle,this);
+                    projectile = new Missile(getX() + 25, getY(), dx * projectileSpeed, dy * projectileSpeed, angle, this);
                     playShootingSound("/laserSound.wav"); // Play sound
                     break;
             }
 
-
-
             // Create the projectile with specific properties
-
             projectile.setFitWidth(projectileSize);
             projectile.setFitHeight(projectileSize);
 
             // Add the projectile to the game
             gameController.addProjectile(projectile);
         }
-
     }
+
     private void playShootingSound(String soundFileName) {
         String soundPath = getClass().getResource(soundFileName).toExternalForm();
         Media shotSound = new Media(soundPath);
         MediaPlayer mediaPlayer = new MediaPlayer(shotSound);
         mediaPlayer.setVolume(0.5); // Adjust volume if necessary
         mediaPlayer.play();
+    }
+
+    public void rotate(double angleDelta) {
+        // Adjust the tank's rotation angle by the specified delta
+        setRotate(getRotate() + angleDelta);
     }
 }
