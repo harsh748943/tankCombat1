@@ -22,15 +22,15 @@ public class Explosion extends ImageView {
 
     // Constructor for explosion animation with sound, image, and earthquake effect
     public Explosion(double x, double y, String spriteSheetPath, String soundFilePath,
-                     int columns, int rows, int frameWidth, int frameHeight, Node shakeNode,boolean isEarthQuake) {
+                     int columns, int rows, int frameWidth, int frameHeight, int width,int height,Node shakeNode,boolean isEarthQuake) {
 
         // Load explosion sprite sheet
         Image spriteSheet = new Image(getClass().getResource(spriteSheetPath).toExternalForm());
         setImage(spriteSheet);
         setX(x);
         setY(y);
-        setFitWidth(frameWidth);
-        setFitHeight(frameHeight);
+        setFitWidth(width);
+        setFitHeight(height);
 
         this.columns = columns;
         this.rows = rows;
