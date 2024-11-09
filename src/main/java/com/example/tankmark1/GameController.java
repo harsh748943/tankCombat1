@@ -154,7 +154,7 @@ public class GameController extends Pane {
 
     private void setUpTanks() {
         if (numPlayers >= 1) {
-            tank1 = new Tank(100, 100, "tank2.png", selectedWeapon);
+            tank1 = new Tank(100, 100, "tank.png", selectedWeapon);
             this.getChildren().add(tank1);
         }
         if (numPlayers >= 2) {
@@ -206,8 +206,8 @@ public class GameController extends Pane {
                     double adjustedY = projectile.getY() - (256 / 2); // Center the explosion
                     Explosion explosion = new Explosion(
                             adjustedX, adjustedY,  // Position of the explosion
-                            "/explosionL1.png",  // Path to explosion sprite sheet
-                            "/explosionSound.mp3",  // Path to explosion sound file
+                            "/explosion_sprite_Sheets/asteroidExplosion.png",  // Path to explosion sprite sheet
+                            "/explosion_sound/explosionSound.mp3",  // Path to explosion sound file
                             8, 7,  // Columns and rows of the sprite sheet
                             256, 256,  // Frame width and height
                             this,// The node to shake during the explosion
@@ -235,7 +235,7 @@ public class GameController extends Pane {
                     Explosion explosion = new Explosion(
                             adjustedX, adjustedY,
                             "/torpedoHitL1.png",
-                            "/explosionSound.mp3",
+                            "/explosion_sound/explosionSound.mp3",
                             5, 2,
                             80, 80,
                             this,
@@ -268,7 +268,7 @@ public class GameController extends Pane {
                 Explosion explosion = new Explosion(
                         adjustedX, adjustedY,  // Position of the explosion
                         "/torpedoHitL1.png",  // Path to explosion sprite sheet
-                        "/explosionSound.mp3",  // Path to explosion sound file
+                        "/explosion_sound/explosionSound.mp3",  // Path to explosion sound file
                         5, 2,  // Columns and rows of the sprite sheet
                         80, 80,  // Frame width and height
                         this,// The node to shake during the explosion
@@ -287,7 +287,7 @@ public class GameController extends Pane {
                 Explosion explosion = new Explosion(
                         adjustedX, adjustedY,  // Position of the explosion
                         "/torpedoHitL1.png",  // Path to explosion sprite sheet
-                        "/explosionSound.mp3",  // Path to explosion sound file
+                        "/explosion_sound/explosionSound.mp3",  // Path to explosion sound file
                         5, 2,  // Columns and rows of the sprite sheet
                         80, 80,  // Frame width and height
                         this,// The node to shake during the explosion
