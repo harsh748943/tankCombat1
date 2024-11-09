@@ -1,3 +1,4 @@
+
 package com.example.tankmark1;
 
 import com.example.tankmark1.map.DestructibleObject;
@@ -10,12 +11,16 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Screen;
 
 import java.util.List;
 
 public class Tank extends ImageView {
+
+
     private double speed = 5;
     private String weapon;
     private long lastShotTime; // Time when the last shot was fired
@@ -49,6 +54,17 @@ public class Tank extends ImageView {
         return health <= 0;
     }
 
+
+    public Circle createShieldCircle() {
+        Circle shieldCircle = new Circle(getFitWidth() / 2 + 10);
+        shieldCircle.setFill(Color.TRANSPARENT);
+        shieldCircle.setStroke(Color.BLUE); // Outline color for shield
+        shieldCircle.setStrokeWidth(4);
+        shieldCircle.setVisible(false); // Hidden by default
+        return shieldCircle;
+    }
+
+
     public void move(double dx, double dy, List<DestructibleObject> destructibleObjects) {
         System.out.println("Moving with dx: " + dx + ", dy: " + dy + ", speed: " + speed);
         double newX = getX() + dx * speed;
@@ -75,17 +91,17 @@ public class Tank extends ImageView {
             }
         }
         if (!collisionDetected) {
-        // Ensure the tank stays within the game area boundaries
-        if (newX >= MARGIN && newX <= usableWidth - 100 + MARGIN) { // Adjust for tank width
-            setX(newX);
-        }
-        if (newY >= MARGIN && newY <= usableHeight - 100 + MARGIN) { // Adjust for tank height
-            setY(newY);
-        }
+            // Ensure the tank stays within the game area boundaries
+            if (newX >= MARGIN && newX <= usableWidth - 100 + MARGIN) { // Adjust for tank width
+                setX(newX);
+            }
+            if (newY >= MARGIN && newY <= usableHeight - 100 + MARGIN) { // Adjust for tank height
+                setY(newY);
+            }
 
-        // Rotate tank according to movement direction
-        rotateToDirection(dx, dy);
-    }}
+            // Rotate tank according to movement direction
+            rotateToDirection(dx, dy);
+        }}
 
     private void rotateToDirection(double dx, double dy) {
         // Calculate angle based on dx, dy

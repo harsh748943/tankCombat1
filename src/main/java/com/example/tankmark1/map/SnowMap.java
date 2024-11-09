@@ -7,7 +7,12 @@ import java.util.stream.Collectors;
 
 public class SnowMap extends Map {
     public SnowMap() {
-        setStyle("-fx-background-color: snow;"); // Load your snow background image
+        setStyle("-fx-background-color: ghostwhite;"); // Load your snow background image
+
+
+        // Add snowfall effect as a background layer
+        SnowfallEffect snowfall = new SnowfallEffect(1500.0,1200.0);
+        getChildren().add(snowfall);
 
         addDestructibleObjects();
     }
@@ -33,9 +38,9 @@ public class SnowMap extends Map {
 
         // Create rocks
 
-        createDestructibleObject("badi sukhi lakdi.png", 100, 100, 1400, 250);
+        createDestructibleObject("badi sukhi lakdi.png", 100, 100, 1200, 250);
 
-        createDestructibleObject("orange ped.png", 100, 100, 100, 600);
+        createDestructibleObject("orange ped.png", 100, 100, 120, 600);
 
         createDestructibleObject("orange ped 2.png", 100, 100, 375, 100);
 

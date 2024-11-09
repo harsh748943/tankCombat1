@@ -1,6 +1,9 @@
 package com.example.tankmark1.map;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.scene.image.ImageView;
+import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -14,6 +17,10 @@ public class ForestMap extends Map {
         // Add destructible objects to the map
         addDestructibleObjects();
     }
+
+
+
+
 
 
     private void addDestructibleObjects() {
