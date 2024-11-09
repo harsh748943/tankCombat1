@@ -34,8 +34,8 @@ public class TankGame extends Application {
     }
 
     // Method to start the game, creating a new GameController with selected settings
-    public void startGame(int numPlayers, String selectedWeapon, String selectedMap, boolean soundOn) {
-        GameController gameController = new GameController(numPlayers, selectedWeapon, selectedMap, soundOn, this);
+    public void startGame(int numPlayers, String selectedWeapon, String selectedMap, boolean soundOn,String level) {
+        GameController gameController = new GameController(numPlayers, selectedWeapon, selectedMap, soundOn, this,level);
         gameScene = new Scene(gameController, screenWidth, screenHeight);
 
         primaryStage.setScene(gameScene);

@@ -16,6 +16,7 @@ public class StartMenu extends GridPane {
     private ComboBox<String> playerSelector;
     private ComboBox<String> weaponSelector;
     private ComboBox<String> mapSelector;
+    private ComboBox<String> levelSelector;  // ComboBox for selecting level
     private CheckBox soundCheckbox;
 
     public StartMenu(Stage primaryStage, TankGame mainApp) {
@@ -52,29 +53,10 @@ public class StartMenu extends GridPane {
         playerLabel.setFont(Font.font("Arial", FontWeight.SEMI_BOLD, 16));
         playerSelector = new ComboBox<>();
         playerSelector.getItems().addAll("1", "2");
-        playerSelector.setValue("1");
+        playerSelector.setValue("1");  // Set default value to "1"
 
         // Style ComboBox and ensure white text for selected item
-        playerSelector.setStyle(
-                "-fx-font-family: Arial, sans-serif;" +
-                        "-fx-font-size: 14px;" +
-                        "-fx-background-color: #333333;" +
-                        "-fx-text-fill: #FFFFFF;" +               // White text color for the selected item
-                        "-fx-border-color: #777777;" +
-                        "-fx-border-width: 1;"
-        );
-
-        // Ensure white text for selected item in dropdown
-        playerSelector.setButtonCell(new ListCell<String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (item != null) {
-                    setText(item);
-                    setStyle("-fx-text-fill: white;");  // White text for selected item
-                }
-            }
-        });
+        styleComboBox(playerSelector);
 
         // Weapon selection
         Label weaponLabel = new Label("Select Weapon:");
@@ -85,26 +67,7 @@ public class StartMenu extends GridPane {
         weaponSelector.setValue("Cannon");
 
         // Style ComboBox and ensure white text for selected item
-        weaponSelector.setStyle(
-                "-fx-font-family: Arial, sans-serif;" +
-                        "-fx-font-size: 14px;" +
-                        "-fx-background-color: #333333;" +
-                        "-fx-text-fill: #FFFFFF;" +               // White text color for the selected item
-                        "-fx-border-color: #777777;" +
-                        "-fx-border-width: 1;"
-        );
-
-        // Ensure white text for selected item in dropdown
-        weaponSelector.setButtonCell(new ListCell<String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (item != null) {
-                    setText(item);
-                    setStyle("-fx-text-fill: white;");  // White text for selected item
-                }
-            }
-        });
+        styleComboBox(weaponSelector);
 
         // Map selection
         Label mapLabel = new Label("Select Map:");
@@ -115,26 +78,17 @@ public class StartMenu extends GridPane {
         mapSelector.setValue("Forest");
 
         // Style ComboBox and ensure white text for selected item
-        mapSelector.setStyle(
-                "-fx-font-family: Arial, sans-serif;" +
-                        "-fx-font-size: 14px;" +
-                        "-fx-background-color: #333333;" +
-                        "-fx-text-fill: #FFFFFF;" +               // White text color for the selected item
-                        "-fx-border-color: #777777;" +
-                        "-fx-border-width: 1;"
-        );
+        styleComboBox(mapSelector);
 
-        // Ensure white text for selected item in dropdown
-        mapSelector.setButtonCell(new ListCell<String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (item != null) {
-                    setText(item);
-                    setStyle("-fx-text-fill: white;");  // White text for selected item
-                }
-            }
-        });
+        // Level selection (only visible if 1 player is selected)
+        Label levelLabel = new Label("Select Level:");
+        levelLabel.setTextFill(Color.WHITE);
+        levelLabel.setFont(Font.font("Arial", FontWeight.SEMI_BOLD, 16));
+        levelSelector = new ComboBox<>();
+        levelSelector.getItems().addAll("Easy", "Medium", "Hard");
+        levelSelector.setValue("Easy");
+        levelSelector.setVisible(true);  // Initially visible
+        styleComboBox(levelSelector);
 
         // Sound toggle
         soundCheckbox = new CheckBox("Sound On/Off");
@@ -149,15 +103,29 @@ public class StartMenu extends GridPane {
                 Integer.parseInt(playerSelector.getValue()),
                 weaponSelector.getValue(),
                 mapSelector.getValue(),
-                soundCheckbox.isSelected()
+                soundCheckbox.isSelected(),
+                levelSelector.getValue()
         ));
-        // In your StartMenu class
+
+        // Exhibition Button
         Button exhibitionButton = new Button("Weapon Exhibition");
         exhibitionButton.setOnAction(e -> new WeaponExhibition().showExhibition(primaryStage));
 
-// Add the button to the layout
-        add(exhibitionButton, 0, 6, 2, 1);
+        // Add exhibition button to layout
+        add(exhibitionButton, 0, 7, 2, 1);
 
+        // Listener for playerSelector to show/hide levelSelector
+        playerSelector.valueProperty().addListener((observable, oldValue, newValue) -> {
+            System.out.println("Player selector changed: " + newValue);  // Debugging log
+            if ("1".equals(newValue)) {
+                levelSelector.setVisible(true);  // Show level selector if 1 player
+            } else {
+                levelSelector.setVisible(false);  // Hide level selector if 2 players
+            }
+
+            // Request layout update to force UI refresh
+            requestLayout();
+        });
 
         // Adding components to the layout
         add(title, 0, 0, 2, 1);
@@ -167,10 +135,36 @@ public class StartMenu extends GridPane {
         add(weaponSelector, 1, 2);
         add(mapLabel, 0, 3);
         add(mapSelector, 1, 3);
-        add(soundCheckbox, 0, 4, 2, 1);
-        add(startButton, 0, 5, 2, 1);
+        add(levelLabel, 0, 4);  // Add level label
+        add(levelSelector, 1, 4); // Add level selector
+        add(soundCheckbox, 0, 5, 2, 1);
+        add(startButton, 0, 6, 2, 1);
 
         // Center alignment for items
         setAlignment(Pos.CENTER);
+    }
+
+    // Method to apply the same style to all ComboBoxes
+    private void styleComboBox(ComboBox<String> comboBox) {
+        comboBox.setStyle(
+                "-fx-font-family: Arial, sans-serif;" +
+                        "-fx-font-size: 14px;" +
+                        "-fx-background-color: #333333;" +
+                        "-fx-text-fill: #FFFFFF;" +               // White text color for the selected item
+                        "-fx-border-color: #777777;" +
+                        "-fx-border-width: 1;"
+        );
+
+        // Ensure white text for selected item in dropdown
+        comboBox.setButtonCell(new ListCell<String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item != null) {
+                    setText(item);
+                    setStyle("-fx-text-fill: white;");  // White text for selected item
+                }
+            }
+        });
     }
 }

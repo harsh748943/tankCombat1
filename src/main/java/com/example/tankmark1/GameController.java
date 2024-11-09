@@ -24,6 +24,7 @@ public class GameController extends Pane {
     private String selectedWeapon;
     private String selectedMap;
     private boolean soundOn;
+    private String level;
     private MediaPlayer mediaPlayer;
     private TankGame mainApp;  // Reference to the main application
     public Tank tank1;
@@ -35,17 +36,19 @@ public class GameController extends Pane {
     private Set<KeyCode> pressedKeys = new HashSet<>();
     private List<Projectile> projectiles = new ArrayList<>();
     private List<DestructibleObject> destructibleObjects = new ArrayList<>();
+    private boolean gameOver = false;
+
 
     private Thread movementThread;
     private boolean isRobot=false;
 
-    public GameController(int numPlayers, String selectedWeapon, String selectedMap, boolean soundOn, TankGame mainApp) {
+    public GameController(int numPlayers, String selectedWeapon, String selectedMap, boolean soundOn, TankGame mainApp,String level) {
         this.numPlayers = numPlayers;
         this.selectedWeapon = selectedWeapon;
         this.selectedMap = selectedMap;
         this.soundOn = soundOn;
         this.mainApp = mainApp;  // Assign mainApp reference
-
+        this.level=level;
         setUpMap();
         setUpTanks();
         setUpHealthBars();
@@ -108,6 +111,9 @@ public class GameController extends Pane {
     }
 
     private void endGame(String winnerMessage) {
+        // Set game over flag
+        gameOver = true;
+
         // Stop movement and projectile threads
         if (movementThread != null && movementThread.isAlive()) {
             movementThread.interrupt();
@@ -135,6 +141,7 @@ public class GameController extends Pane {
             });
         });
     }
+
 
     private void setUpMap() {
         Map currentMap;
@@ -176,18 +183,6 @@ public class GameController extends Pane {
 
                 this.getChildren().add(tank2);
             }
-
-
-
-
-//        if (numPlayers == 1) {
-//            tank1 = new Tank(100, 100, "tank.png", selectedWeapon);
-//            this.getChildren().add(tank1);
-//            tank3 = new Tank(1300, 650, "tank3.png", selectedWeapon);
-//            // If only one player is selected, control tank2 with computer AI
-//
-//
-//        }
     }
     private void setComputerControlledTank(Tank computerTank) {
         new Thread(() -> {
@@ -195,12 +190,28 @@ public class GameController extends Pane {
             long lastShootTime = 0;
             long lastMoveTime = 0;
 
-            while (true) {
+            // Define speed and shooting interval based on level
+            double moveSpeed = 3.5;  // Default move speed (Medium level)
+            long shootInterval = 1500;  // Default shoot interval (Medium level)
+
+            switch (level) {
+                case "Easy":
+                    moveSpeed = 2;  // Slow speed for easy
+                    shootInterval = 3000;  // Shoot every 3 seconds for easy
+                    break;
+                case "Hard":
+                    moveSpeed = 5.5;  // Fast speed for hard
+                    shootInterval = 500;  // Shoot every 1 second for hard
+                    break;
+                // Default is Medium (no need to modify)
+            }
+
+            while (!gameOver) {  // Check game over status
                 try {
                     long currentTime = System.currentTimeMillis();
                     boolean shouldMove = currentTime - lastMoveTime > 100;  // Move every 0.1 second (smooth)
 
-                    boolean shouldShoot = currentTime - lastShootTime > 2000;  // Shoot every 2 seconds
+                    boolean shouldShoot = currentTime - lastShootTime > shootInterval;  // Adjusted shooting interval
 
                     boolean tank1Destroyed = tank1 == null || tank1.isDestroyed();
                     if (tank1Destroyed) {
@@ -230,15 +241,15 @@ public class GameController extends Pane {
                             } else {
                                 // Otherwise, move towards tank1
                                 double radians = Math.toRadians(angleToTank1);
-                                dx[0] = Math.cos(radians) * 3;  // Fast movement (speed = 4)
-                                dy[0] = Math.sin(radians) * 3;
+                                dx[0] = Math.cos(radians) * moveSpeed;  // Move with adjusted speed
+                                dy[0] = Math.sin(radians) * moveSpeed;
                             }
 
                             // Rotate the tank to face tank1
                             Platform.runLater(() -> computerTank.setRotate(angleToTank1));
                         } else {
                             // Random movement if tank1 is destroyed or far away
-                            dx[0] = random.nextDouble() * 1- 1;  // Random between -1 and 1
+                            dx[0] = random.nextDouble() * 1 - 1;  // Random between -1 and 1
                             dy[0] = random.nextDouble() * 1 - 1;
                         }
 
@@ -248,7 +259,7 @@ public class GameController extends Pane {
                     }
 
                     if (shouldShoot && tank1 != null && !tank1Destroyed) {
-                        // Shoot after every 2 seconds
+                        // Shoot after the specified interval
                         Platform.runLater(() -> computerTank.shoot(this));
                         lastShootTime = currentTime;  // Update last shoot time
                     }
@@ -263,6 +274,8 @@ public class GameController extends Pane {
             }
         }).start();
     }
+
+
 
 
 
