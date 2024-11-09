@@ -169,16 +169,51 @@ public class GameController extends Pane {
         if (tank1.isDestroyed()) {
             // Show destroyed image for tank1
             tank1.setImage(new Image("/tankBlast.png"));
-            endGame("Player 2 Wins!");
+            showWinningMessage("Player 2 Wins!","Press Enter to exit.");
+            endGame();
         } else if (tank2.isDestroyed()) {
             // Show destroyed image for tank2
             tank2.setImage(new Image("/tankBlast1.png"));
-            endGame("Player 1 Wins!");
-
+            showWinningMessage("Player 1 Wins!","Press Enter to exit.");
+            endGame();
         }
     }
+    private void showWinningMessage(String message,String message1) {
+        Text winningMessage = new Text(message);
+        Text winningMessage1 = new Text(message1);
+        winningMessage.setStyle(
+                "-fx-font-size: 55px; " +
+                        "-fx-font-weight: bold; " +
+                        "-fx-text-fill: #000000; " +  // Green color for the text
+                        "-fx-effect: dropshadow(gaussian, rgba(255,0,0,0.75), 10, 0.5, 0, 2); " +  // Shadow effect
+                        "-fx-background-color: rgba(255, 0, 0, 0.5); " +  // Semi-transparent dark background
+                        "-fx-padding: 20; " +
+                        "-fx-background-radius: 10; "
+        );
+        winningMessage1.setStyle(
+                "-fx-font-size: 25px; " +
+                        "-fx-font-weight: bold; " +
+                        "-fx-text-fill: #FF0000;" +
+                        "-fx-effect: dropshadow(gaussian, rgba(255,0,0,0.75), 10, 0.5, 0, 2); " +  // Shadow effect
+                        "-fx-background-color: rgba(255, 0, 0, 0.5); " +  // Semi-transparent dark background
+                        "-fx-padding: 20; " +
+                        "-fx-background-radius: 10; "
+        );
 
-    private void endGame(String winnerMessage) {
+        // Set the position to center
+        winningMessage.setX(600);  // X-coordinate for centering
+        winningMessage.setY(400);  // Y-coordinate for centering
+        winningMessage1.setX(670);  // X-coordinate for centering
+        winningMessage1.setY(470);  // Y-coordinate for centering
+
+
+        // Optional: Add the winning message to the root or main pane
+        this.getChildren().add(winningMessage);
+        this.getChildren().add(winningMessage1);
+    }
+
+
+    private void endGame() {
         // Set game over flag
         gameOver = true;
 
@@ -194,9 +229,6 @@ public class GameController extends Pane {
 
         // Display winner message and await Enter key to return to menu
         Platform.runLater(() -> {
-            winnerText.setText(winnerMessage + " Press Enter to exit.");
-            winnerText.setVisible(true);
-
             // Disable tank controls to prevent further movement
             this.setOnKeyPressed(null);
             this.setOnKeyReleased(null);
