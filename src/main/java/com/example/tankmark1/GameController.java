@@ -6,6 +6,7 @@ import com.example.tankmark1.weapons.Explosion;
 import com.example.tankmark1.weapons.Projectile;
 import javafx.application.Platform;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
@@ -27,6 +28,7 @@ public class GameController extends Pane {
     private TankGame mainApp;  // Reference to the main application
     public Tank tank1;
     public Tank tank2;
+    public Tank tank3;
     private ProgressBar healthBar1, healthBar2;
     private Text healthText1, healthText2;
     private Text winnerText;
@@ -35,6 +37,7 @@ public class GameController extends Pane {
     private List<DestructibleObject> destructibleObjects = new ArrayList<>();
 
     private Thread movementThread;
+    private boolean isRobot=false;
 
     public GameController(int numPlayers, String selectedWeapon, String selectedMap, boolean soundOn, TankGame mainApp) {
         this.numPlayers = numPlayers;
@@ -93,9 +96,14 @@ public class GameController extends Pane {
 
     private void checkForWin() {
         if (tank1.isDestroyed()) {
+            // Show destroyed image for tank1
+            tank1.setImage(new Image("/tankBlast.png"));
             endGame("Player 2 Wins!");
         } else if (tank2.isDestroyed()) {
+            // Show destroyed image for tank2
+            tank2.setImage(new Image("/tankBlast1.png"));
             endGame("Player 1 Wins!");
+
         }
     }
 
@@ -153,15 +161,111 @@ public class GameController extends Pane {
 
 
     private void setUpTanks() {
-        if (numPlayers >= 1) {
-            tank1 = new Tank(100, 100, "tank.png", selectedWeapon);
-            this.getChildren().add(tank1);
-        }
-        if (numPlayers >= 2) {
-            tank2 = new Tank(1000, 600, "tank3.png", selectedWeapon);
-            this.getChildren().add(tank2);
-        }
+        tank1 = new Tank(100, 100, "tank.png", selectedWeapon);
+        this.getChildren().add(tank1);
+
+
+            tank2 = new Tank(1300, 700, "tank3.png", selectedWeapon);
+            if(numPlayers>1) {
+                this.getChildren().add(tank2);
+
+            }
+            else {
+                isRobot=true;
+                setComputerControlledTank(tank2);
+
+                this.getChildren().add(tank2);
+            }
+
+
+
+
+//        if (numPlayers == 1) {
+//            tank1 = new Tank(100, 100, "tank.png", selectedWeapon);
+//            this.getChildren().add(tank1);
+//            tank3 = new Tank(1300, 650, "tank3.png", selectedWeapon);
+//            // If only one player is selected, control tank2 with computer AI
+//
+//
+//        }
     }
+    private void setComputerControlledTank(Tank computerTank) {
+        new Thread(() -> {
+            Random random = new Random();
+            long lastShootTime = 0;
+            long lastMoveTime = 0;
+
+            while (true) {
+                try {
+                    long currentTime = System.currentTimeMillis();
+                    boolean shouldMove = currentTime - lastMoveTime > 100;  // Move every 0.1 second (smooth)
+
+                    boolean shouldShoot = currentTime - lastShootTime > 2000;  // Shoot every 2 seconds
+
+                    boolean tank1Destroyed = tank1 == null || tank1.isDestroyed();
+                    if (tank1Destroyed) {
+                        shouldShoot = false;
+                    }
+
+                    if (shouldMove) {
+                        final double[] dx = {0}, dy = {0};  // Final dx and dy for lambda expression
+
+                        if (!tank1Destroyed && tank1 != null) {
+                            // Calculate direction to tank1
+                            double angleToTank1 = Math.toDegrees(Math.atan2(
+                                    tank1.getY() - computerTank.getY(),
+                                    tank1.getX() - computerTank.getX()
+                            ));
+
+                            // Distance from tank1 to tank2
+                            double distanceToTank1 = Math.sqrt(
+                                    Math.pow(tank1.getX() - computerTank.getX(), 2) +
+                                            Math.pow(tank1.getY() - computerTank.getY(), 2)
+                            );
+
+                            if (distanceToTank1 < 200) {  // If tank1 is very close, dodge
+                                // Move in a random direction
+                                dx[0] = random.nextDouble() * 1 - 1;  // Random between -1 and 1
+                                dy[0] = random.nextDouble() * 1 - 1;
+                            } else {
+                                // Otherwise, move towards tank1
+                                double radians = Math.toRadians(angleToTank1);
+                                dx[0] = Math.cos(radians) * 3;  // Fast movement (speed = 4)
+                                dy[0] = Math.sin(radians) * 3;
+                            }
+
+                            // Rotate the tank to face tank1
+                            Platform.runLater(() -> computerTank.setRotate(angleToTank1));
+                        } else {
+                            // Random movement if tank1 is destroyed or far away
+                            dx[0] = random.nextDouble() * 1- 1;  // Random between -1 and 1
+                            dy[0] = random.nextDouble() * 1 - 1;
+                        }
+
+                        // Move the tank using the updated dx and dy values
+                        Platform.runLater(() -> computerTank.move(dx[0], dy[0], destructibleObjects));
+                        lastMoveTime = currentTime;  // Update last move time
+                    }
+
+                    if (shouldShoot && tank1 != null && !tank1Destroyed) {
+                        // Shoot after every 2 seconds
+                        Platform.runLater(() -> computerTank.shoot(this));
+                        lastShootTime = currentTime;  // Update last shoot time
+                    }
+
+                    // Sleep to allow for smoother movement and shooting
+                    Thread.sleep(50);  // 50ms delay to make the movement smooth
+
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+        }).start();
+    }
+
+
+
 
     public void startGame() {
         if (soundOn) {
@@ -206,8 +310,8 @@ public class GameController extends Pane {
                     double adjustedY = projectile.getY() - (256 / 2); // Center the explosion
                     Explosion explosion = new Explosion(
                             adjustedX, adjustedY,  // Position of the explosion
-                            "/explosion_sprite_Sheets/asteroidExplosion.png",  // Path to explosion sprite sheet
-                            "/explosion_sound/explosionSound.mp3",  // Path to explosion sound file
+                            "/explosionL1.png",  // Path to explosion sprite sheet
+                            "/explosionSound.mp3",  // Path to explosion sound file
                             8, 7,  // Columns and rows of the sprite sheet
                             256, 256,  // Frame width and height
                             this,// The node to shake during the explosion
@@ -235,7 +339,7 @@ public class GameController extends Pane {
                     Explosion explosion = new Explosion(
                             adjustedX, adjustedY,
                             "/torpedoHitL1.png",
-                            "/explosion_sound/explosionSound.mp3",
+                            "/explosionSound.mp3",
                             5, 2,
                             80, 80,
                             this,
@@ -268,7 +372,7 @@ public class GameController extends Pane {
                 Explosion explosion = new Explosion(
                         adjustedX, adjustedY,  // Position of the explosion
                         "/torpedoHitL1.png",  // Path to explosion sprite sheet
-                        "/explosion_sound/explosionSound.mp3",  // Path to explosion sound file
+                        "/explosionSound.mp3",  // Path to explosion sound file
                         5, 2,  // Columns and rows of the sprite sheet
                         80, 80,  // Frame width and height
                         this,// The node to shake during the explosion
@@ -287,7 +391,7 @@ public class GameController extends Pane {
                 Explosion explosion = new Explosion(
                         adjustedX, adjustedY,  // Position of the explosion
                         "/torpedoHitL1.png",  // Path to explosion sprite sheet
-                        "/explosion_sound/explosionSound.mp3",  // Path to explosion sound file
+                        "/explosionSound.mp3",  // Path to explosion sound file
                         5, 2,  // Columns and rows of the sprite sheet
                         80, 80,  // Frame width and height
                         this,// The node to shake during the explosion
@@ -362,7 +466,7 @@ public class GameController extends Pane {
             if (pressedKeys.contains(KeyCode.D)) updateTankPosition(tank1, 1, 0);
             if (pressedKeys.contains(KeyCode.SPACE)) tank1.shoot(this);
         }
-        if (tank2 != null) {
+        if (tank2 != null&&!isRobot) {
             if (pressedKeys.contains(KeyCode.UP)) updateTankPosition(tank2, 0, -1);
             if (pressedKeys.contains(KeyCode.DOWN)) updateTankPosition(tank2, 0, 1);
             if (pressedKeys.contains(KeyCode.LEFT)) updateTankPosition(tank2, -1, 0);
