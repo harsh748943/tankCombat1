@@ -65,7 +65,7 @@ public class GameController extends Pane {
 
         setUpMap();
         setUpTanks();
-        setsb();
+
         setUpHealthBars();
         startCountdown();
         setUpPauseText();
@@ -206,17 +206,17 @@ public class GameController extends Pane {
         this.getChildren().add(winnerText);
     }
 
-    public void updatesb() {
-        // Update Player 1 health bar and text
-        double s1 = tank1.getHealth();
-        sb1.setProgress(s1 / 100.0);
-        st1.setText((int) s1 + "%");
-
-        // Update Player 2 health bar and text
-        double s2 = tank2.getHealth();
-        sb2.setProgress(s2 / 100.0);
-       st2.setText((int) s2 + "%");
-    }
+//    public void updatesb() {
+//        // Update Player 1 health bar and text
+//        double s1 = tank1.getHealth();
+//        sb1.setProgress(s1 / 100.0);
+//        st1.setText((int) s1 + "%");
+//
+//        // Update Player 2 health bar and text
+//        double s2 = tank2.getHealth();
+//        sb2.setProgress(s2 / 100.0);
+//       st2.setText((int) s2 + "%");
+//    }
 
 
     public void updateHealthBars() {
@@ -402,12 +402,14 @@ public class GameController extends Pane {
             for (Projectile other : new ArrayList<>(projectiles)) {
                 if (projectile != other && projectile.collidesWith(other)) {
                     // Create an explosion at the point of collision
-                    // If you find that the explosion is misaligned, adjust like this:
-                    double adjustedX = projectile.getX() - (128 / 2);  // Center the explosion
-                    double adjustedY = projectile.getY() - (128 / 2); // Center the explosion
+                    double collisionX = (projectile.getX() + other.getX()) / 2;
+                    double collisionY = (projectile.getY() + other.getY()) / 2;
+
+                    double adjustedX = collisionX - (256 / 2);  // Center the explosion
+                    double adjustedY =collisionY - (256 / 2); // Center the explosion
                     Explosion explosion = new Explosion(
                             adjustedX, adjustedY,
-                            "/explosionL1.png",
+                            "/explosion_sprite_Sheets/explosionL1.png",
                             "/explosionSound.mp3",
                             8,
                             7,
@@ -460,7 +462,7 @@ public class GameController extends Pane {
                     // If shield is not active, apply damage directly to health
                     tank1.takeDamageToS(projectile.getDamage());
                 }
-                updatesb();
+//                updatesb();
                 updateHealthBars();
                 removeProjectile(projectile);
                 checkForWin();
@@ -479,7 +481,7 @@ public class GameController extends Pane {
                     // If shield is not active, apply damage directly to health
                     tank2.takeDamageToS(projectile.getDamage());
                 }
-                updatesb();
+//                updatesb();
                 updateHealthBars();
                 removeProjectile(projectile);
                 checkForWin();
@@ -496,8 +498,13 @@ public class GameController extends Pane {
 
 
     private void createExplosion(Projectile projectile) {
-        double adjustedX = projectile.getX() - projectile.getExplosionFrameWidth()/2;
-        double adjustedY = projectile.getY() - projectile.getExplosionFrameHeight()/2;
+        double collisionX = (projectile.getX() + projectile.getX()) / 2;
+        double collisionY = (projectile.getY() + projectile.getY()) / 2;
+
+        double adjustedX = collisionX - (projectile.getExplosionFrameWidth() / 2);  // Center the explosion
+        double adjustedY =collisionY - (projectile.getExplosionFrameHeight() / 2); // Center the explosion
+//        double adjustedX = projectile.getX() - 128/2;
+//        double adjustedY = projectile.getY() - 128/2;
         Explosion explosion = new Explosion(
                 adjustedX, adjustedY,
                 projectile.getExplosionImagePath(),
@@ -506,8 +513,8 @@ public class GameController extends Pane {
                 projectile.getExplosionFrameRow(),
                 projectile.getExplosionFrameWidth(),
                 projectile.getExplosionFrameHeight(),
-                projectile.getExplosionFrameWidth(),
-                projectile.getExplosionFrameHeight(),
+                128,
+                128,
                 this, true
         );
         Platform.runLater(() -> getChildren().add(explosion));

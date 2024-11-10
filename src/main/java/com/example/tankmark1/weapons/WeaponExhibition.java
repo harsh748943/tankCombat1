@@ -5,6 +5,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
@@ -22,43 +23,48 @@ public class WeaponExhibition {
     private final Map<String, String> weaponDescriptions = new HashMap<>();
     private final Map<String, Image> weaponImages = new HashMap<>();
     private final Map<String, Integer> weaponDamage = new HashMap<>();
-    private final Map<String, String> weaponSpecialProperties = new HashMap<>();
+
 
     public WeaponExhibition() {
         // Initialize weapon descriptions
-        weaponDescriptions.put("Cannon", "A standard explosive weapon with high impact.");
+        weaponDescriptions.put("Cannon", "A standard explosive bomb with low impact but fast.");
         weaponDescriptions.put("Missile", "A powerful guided weapon with a long range.");
         weaponDescriptions.put("Laser", "A precise energy weapon with instant hit.");
+        weaponDescriptions.put("Demon", "A Monster weapon with mass Destruction.");
+        weaponDescriptions.put("Gamma-Blaster", "A Missile full of gamma radiation.");
 
         // Load weapon images (ensure these images are accessible in your resources)
-        weaponImages.put("Cannon", new Image("rocket.png"));
-        weaponImages.put("Missile", new Image("rocket.png"));
-        weaponImages.put("Laser", new Image("rocket.png"));
+        weaponImages.put("Cannon", new Image(getClass().getResource("/weapons_png/bomb.png").toExternalForm()));
+        weaponImages.put("Missile", new Image(getClass().getResource("/weapons_png/rocket.png").toExternalForm()));
+        weaponImages.put("Laser", new Image(getClass().getResource("/weapons_png/bigtorpedo.png").toExternalForm()));
+        weaponImages.put("Demon", new Image(getClass().getResource("/weapons_png/demon.png").toExternalForm()));
+        weaponImages.put("Gamma-Blaster", new Image(getClass().getResource("/weapons_png/gamma_blaster.png").toExternalForm()));
 
         // Define weapon damage
-        weaponDamage.put("Cannon", 50);
-        weaponDamage.put("Missile", 75);
-        weaponDamage.put("Laser", 60);
+        weaponDamage.put("Cannon", 15);
+        weaponDamage.put("Missile", 20);
+        weaponDamage.put("Laser", 25);
+        weaponDamage.put("Demon", 40);
+        weaponDamage.put("Gamma-Blaster", 50);
 
-        // Define weapon special properties
-        weaponSpecialProperties.put("Cannon", "Splash Damage");
-        weaponSpecialProperties.put("Missile", "Homing Ability");
-        weaponSpecialProperties.put("Laser", "Pierces Armor");
+
     }
 
     public void showExhibition(Stage primaryStage) {
         // Create a new window (Stage) for the exhibition
         Stage exhibitionStage = new Stage();
-        exhibitionStage.setTitle("Weapon Exhibition");
+        exhibitionStage.setTitle("Artillery");
 
         // Main layout
+
         VBox mainLayout = new VBox(20);
         mainLayout.setPadding(new Insets(15));
         mainLayout.setAlignment(Pos.CENTER);
         mainLayout.setStyle("-fx-background-color: #2c3e50;");
 
+
         // Title
-        Label title = new Label("Weapon Exhibition");
+        Label title = new Label("Artillery");
         title.setFont(Font.font("Arial", FontWeight.BOLD, 26));
         title.setTextFill(Color.WHITE);
 
@@ -69,15 +75,16 @@ public class WeaponExhibition {
         }
 
         // Close button
-        Button closeButton = new Button("Close Exhibition");
+        Button closeButton = new Button("Close Artillery");
         closeButton.setStyle("-fx-background-color: #ff5722; -fx-text-fill: white;");
         closeButton.setOnAction(e -> exhibitionStage.close());
 
         // Add title and close button to layout
         mainLayout.getChildren().addAll(title, closeButton);
-
+        ScrollPane scrollPane = new ScrollPane(mainLayout);
+        scrollPane.setFitToWidth(true);
         // Create and set the scene
-        Scene scene = new Scene(mainLayout, 500, 600);
+        Scene scene = new Scene(scrollPane, 700, 700);
         exhibitionStage.setScene(scene);
         exhibitionStage.initOwner(primaryStage);
         exhibitionStage.show();
@@ -92,8 +99,8 @@ public class WeaponExhibition {
 
         // Weapon icon
         ImageView weaponIcon = new ImageView(weaponImages.get(weaponName));
-        weaponIcon.setFitWidth(100);
-        weaponIcon.setFitHeight(60);
+        weaponIcon.setFitWidth(150);
+        weaponIcon.setFitHeight(100);
 
         // Weapon details (name, description, damage, special property)
         VBox weaponDetails = new VBox(5);
@@ -110,12 +117,10 @@ public class WeaponExhibition {
         weaponDamageLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
         weaponDamageLabel.setTextFill(Color.RED);
 
-        Label weaponSpecialLabel = new Label("Special: " + weaponSpecialProperties.get(weaponName));
-        weaponSpecialLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-        weaponSpecialLabel.setTextFill(Color.LIGHTGREEN);
+
 
         // Add name, description, damage, and special property to details box
-        weaponDetails.getChildren().addAll(weaponTitle, weaponDescription, weaponDamageLabel, weaponSpecialLabel);
+        weaponDetails.getChildren().addAll(weaponTitle, weaponDescription, weaponDamageLabel);
 
         // Add icon and details to main container
         weaponContainer.getChildren().addAll(weaponIcon, weaponDetails);

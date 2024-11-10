@@ -7,7 +7,7 @@ import javafx.scene.Node;
 import javafx.util.Duration;
 
 public class Earthquake {
-    private final Node node;           // The node that will be shaken (e.g., camera or game root)
+    private final Node node;
     private final double intensity;    // How much the node will shake
     private final double duration;     // Duration of the earthquake effect
 

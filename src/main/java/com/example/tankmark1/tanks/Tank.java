@@ -35,7 +35,7 @@ public class Tank extends ImageView {
     public double getShieldStrength() { return shieldStrength; }
 
 
-    private double speed = 5;
+    private double speed = 3;
     private String weapon;
     private long lastShotTime; // Time when the last shot was fired
     private static final long SHOOT_DELAY = 1000; // Minimum time delay between shots (ms)
@@ -229,28 +229,28 @@ public class Tank extends ImageView {
             switch (weapon) {
                 case "Cannon":
                     projectileImagePath = "cannonball.png"; // Path for cannonball image
-                    projectileSpeed = 8;
+                    projectileSpeed = 4;
                     projectileSize = 30;
                     projectile = new Cannon(getX() + 25, getY(), dx * projectileSpeed, dy * projectileSpeed, angle, this);
                     playShootingSound("/laserSound.wav"); // Play sound
                     break;
                 case "Missile":
                     projectileImagePath = "rocket.png"; // Path for missile image
-                    projectileSpeed = 1;
+                    projectileSpeed = 3;
                     projectileSize = 50;
                     projectile = new Missile(getX() + 25, getY(), dx * projectileSpeed, dy * projectileSpeed, angle, this);
                     playShootingSound("/levelBossTorpedo.wav"); // Play sound
                     break;
                 case "Laser":
                     projectileImagePath = "laser.png"; // Path for laser image
-                    projectileSpeed = 4;
+                    projectileSpeed = 3;
                     projectileSize = 50;
                     projectile = new Torpedo(getX() + 25, getY(), dx * projectileSpeed, dy * projectileSpeed, angle, this);
                     playShootingSound("/levelBossRocket.wav"); // Play sound
                     break;
                 default:
                     projectileImagePath = "default.png"; // Fallback image
-                    projectileSpeed = 10;
+                    projectileSpeed = 2;
                     projectileSize = 20;
                     projectile = new Missile(getX() + 25, getY(), dx * projectileSpeed, dy * projectileSpeed, angle, this);
                     playShootingSound("/laserSound.wav"); // Play sound
