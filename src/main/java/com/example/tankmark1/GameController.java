@@ -321,6 +321,10 @@ public class GameController extends Pane {
         if (currentMap instanceof MazeMap mazeMap) {
             destructibleObjects.addAll(mazeMap.getDestructibleObjects());
         }
+
+        if (currentMap instanceof DesertMap dMap) {
+            destructibleObjects.addAll(dMap.getDestructibleObjects());
+        }
     }
 
 
