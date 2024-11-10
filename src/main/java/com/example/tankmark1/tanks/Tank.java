@@ -190,6 +190,7 @@ public class Tank extends ImageView {
                 }
             }
         }
+
         if (!collisionDetected) {
             // Ensure the tank stays within the game area boundaries
             if (newX >= MARGIN && newX <= usableWidth - 100 + MARGIN) { // Adjust for tank width
