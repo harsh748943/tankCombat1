@@ -109,8 +109,10 @@ public class StartMenu extends GridPane {
         ));
 
         // Exhibition Button
-        Button exhibitionButton = new Button("Weapon Exhibition");
+        Button exhibitionButton = new Button("Artillery");
+        exhibitionButton.setStyle("-fx-background-color: #A52A2A; -fx-text-fill: white; -fx-font-size: 13px; -fx-font-weight: bold;");
         exhibitionButton.setOnAction(e -> new WeaponExhibition().showExhibition(primaryStage));
+
 
         // Add exhibition button to layout
         add(exhibitionButton, 0, 7, 2, 1);
