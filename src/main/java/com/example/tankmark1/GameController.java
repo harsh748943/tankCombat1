@@ -36,6 +36,10 @@ public class GameController extends Pane {
     public Tank tank1;
     public Tank tank2;
     private ProgressBar healthBar1, healthBar2;
+
+    private ProgressBar sb1, sb2;
+    private Text st1, st2;
+
     private Text healthText1, healthText2;
     private Text winnerText;
     private Set<KeyCode> pressedKeys = new HashSet<>();
@@ -60,6 +64,7 @@ public class GameController extends Pane {
 
         setUpMap();
         setUpTanks();
+        setsb();
         setUpHealthBars();
         startCountdown();
 
@@ -160,6 +165,46 @@ public class GameController extends Pane {
         winnerText.setLayoutY(50);
         winnerText.setVisible(false);
         this.getChildren().add(winnerText);
+    }
+
+    private void setsb() {
+        sb1 = new ProgressBar(1);
+        sb1.setStyle("-fx-accent: black;");
+        st1 = new Text("100%");
+
+        // Position Player 1’s health on the left
+        HBox player1sb = new HBox(5, sb1, st1);
+        player1sb.setLayoutX(10);
+        player1sb.setLayoutY(10);
+
+        sb2 = new ProgressBar(1);
+        sb2.setStyle("-fx-accent: black;");
+        st2 = new Text("100%");
+
+        // Position Player 2’s health on the right
+        HBox player2sb = new HBox(5, st2, sb2);
+        player2sb.setLayoutX(1400); // Adjust based on scene width
+        player2sb.setLayoutY(10);
+        this.getChildren().addAll(player1sb,player2sb);
+
+        winnerText = new Text();
+        winnerText.setFill(Color.RED);
+        winnerText.setLayoutX(350);
+        winnerText.setLayoutY(50);
+        winnerText.setVisible(false);
+        this.getChildren().add(winnerText);
+    }
+
+    public void updatesb() {
+        // Update Player 1 health bar and text
+        double s1 = tank1.getHealth();
+        sb1.setProgress(s1 / 100.0);
+        st1.setText((int) s1 + "%");
+
+        // Update Player 2 health bar and text
+        double s2 = tank2.getHealth();
+        sb2.setProgress(s2 / 100.0);
+       st2.setText((int) s2 + "%");
     }
 
 
@@ -284,12 +329,14 @@ public class GameController extends Pane {
         tank1 = new Tank(100, 100, "tank.png", selectedWeapon);
         allTanks.add(tank1);
         this.getChildren().add(tank1);
+        this.getChildren().add(tank1.getShieldCircle()); // Assuming you have a getter for shieldCircle
 
 
             tank2 = new Tank(1300, 700, "tank3.png", selectedWeapon);
             allTanks.add(tank2);
             if(numPlayers>1) {
                 this.getChildren().add(tank2);
+                this.getChildren().add(tank2.getShieldCircle());
 
             }
             else {
@@ -388,7 +435,17 @@ public class GameController extends Pane {
 
 
             if (tank1 != null && checkCollision(projectile, tank1) && projectile.getOwner() != tank1) {
-                tank1.takeDamage(projectile.getDamage());
+                if (tank1.isShieldActive()) {
+                    // Reduce shield strength instead of health
+                    tank1.takeDamageToS(projectile.getDamage());
+                    if (tank1.getShieldStrength() <= 0) {
+                        tank1.deactivateShield(); // Deactivate shield if its strength reaches zero
+                    }
+                } else {
+                    // If shield is not active, apply damage directly to health
+                    tank1.takeDamageToS(projectile.getDamage());
+                }
+                updatesb();
                 updateHealthBars();
                 removeProjectile(projectile);
                 checkForWin();
@@ -397,7 +454,17 @@ public class GameController extends Pane {
             }
 
             if (tank2 != null && checkCollision(projectile, tank2) && projectile.getOwner() != tank2) {
-                tank2.takeDamage(projectile.getDamage());
+                if (tank2.isShieldActive()) {
+                    // Reduce shield strength instead of health
+                    tank2.takeDamageToS(projectile.getDamage());
+                    if (tank2.getShieldStrength() <= 0) {
+                        tank2.deactivateShield(); // Deactivate shield if its strength reaches zero
+                    }
+                } else {
+                    // If shield is not active, apply damage directly to health
+                    tank2.takeDamageToS(projectile.getDamage());
+                }
+                updatesb();
                 updateHealthBars();
                 removeProjectile(projectile);
                 checkForWin();
@@ -454,10 +521,31 @@ public class GameController extends Pane {
 
     private void handleKeyPressed(KeyEvent event) {
         pressedKeys.add(event.getCode());
+        if (event.getCode() == KeyCode.R) {
+
+            // Toggle shield for Tank1
+
+            tank1.getShieldCircle().setVisible(!tank1.getShieldCircle().isVisible());
+            tank1.activateShield();
+        } else if (event.getCode() == KeyCode.U) {
+
+            // Toggle shield for Tank2
+
+            tank2.getShieldCircle().setVisible(!tank2.getShieldCircle().isVisible());
+            tank2.activateShield();
+
+        }
     }
 
     private void handleKeyReleased(KeyEvent event) {
         pressedKeys.remove(event.getCode());
+
+        if (event.getCode() == KeyCode.R) {
+            tank1.deactivateShield(); // Example: Player 1 deactivates the shield with 'R'
+        }
+        if (event.getCode() == KeyCode.U) {
+            tank2.deactivateShield();  // Example: Player 2 deactivates the shield with 'R'
+        }
     }
 
     private void startMovementThread() {
@@ -465,6 +553,8 @@ public class GameController extends Pane {
             while (true) {
                 if (countdownComplete) {  // Only move tanks after countdown is complete
                     moveTanks();
+                    tank1.updateShieldStatus();  // Check if shield needs to be deactivated
+                    tank2.updateShieldStatus();
                 }
                 try {
                     Thread.sleep(16); // Roughly 60 FPS
@@ -507,6 +597,7 @@ public class GameController extends Pane {
 
     private void updateTankPosition(Tank tank, double dx, double dy) {
         Platform.runLater(() -> tank.move(dx, dy,destructibleObjects));
+        tank.updateShieldPosition(); // Update the shield position when the tank moves
     }
 
 

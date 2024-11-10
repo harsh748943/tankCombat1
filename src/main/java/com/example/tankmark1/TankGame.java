@@ -2,7 +2,9 @@ package com.example.tankmark1;
 
 import javafx.application.Application;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.paint.Color;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -17,6 +19,11 @@ public class TankGame extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+
+
+//        Group root = new Group();
+//
+//        Scene scene = new Scene(root, 800, 600, Color.BLACK);
         this.primaryStage = primaryStage;
         primaryStage.setTitle("Tank Game");
 
