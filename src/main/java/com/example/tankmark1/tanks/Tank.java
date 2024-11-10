@@ -22,6 +22,19 @@ import java.util.List;
 public class Tank extends ImageView {
 
 
+
+    private double shieldStrength = 100;  // Initial shield strength
+    private boolean isShieldActive = false;
+    private long shieldActivatedTime;
+    private final long shieldDuration = 5000; // Shield duration in milliseconds
+
+
+
+    // Add getters and setters for these attributes
+    public boolean isShieldActive() { return isShieldActive; }
+    public double getShieldStrength() { return shieldStrength; }
+
+
     private double speed = 5;
     private String weapon;
     private long lastShotTime; // Time when the last shot was fired
@@ -31,7 +44,7 @@ public class Tank extends ImageView {
 
     // Margins in pixels (2 cm converted to pixels)
     private static final double MARGIN = 0.5 / 2.54 * 96; // 2 cm to pixels (assuming 96 DPI)
-
+    private Circle shieldCircle;
     public Tank(double x, double y, String imagePath, String weapon) {
         super(new Image(imagePath));
         setX(x);
@@ -42,7 +55,91 @@ public class Tank extends ImageView {
         this.weapon = weapon;
         this.lastShotTime = 0; // Initialize last shot time
 
+
+        // Create the shield circle
+
+        shieldCircle = new Circle(getFitWidth() / 2 + 10); // Adjust size as needed
+
+        shieldCircle.setFill(Color.TRANSPARENT);
+
+        shieldCircle.setStroke(Color.BLUE); // Outline color for shield
+
+        shieldCircle.setStrokeWidth(4);
+
+        shieldCircle.setVisible(false); // Hidden by default
+
+
+        // Set the circle's initial position
+
+        updateShieldPosition();
+
     }
+
+    public Circle getShieldCircle() {
+        return shieldCircle;
+    }
+
+
+
+    // Activate the shield
+    public void activateShield() {
+
+        if (!isShieldActive) {
+
+            isShieldActive = true;
+
+            shieldActivatedTime = System.currentTimeMillis();
+
+            shieldCircle.setVisible(true); // Show the shield
+
+        }
+
+    }
+
+
+    public void deactivateShield() {
+
+        isShieldActive = false;
+
+        shieldStrength = 100;  // Reset shield strength for next use
+
+        shieldCircle.setVisible(false); // Hide the shield
+
+    }
+
+    // Method to update shield status based on time
+    // Method to update shield status based on time
+    public void updateShieldStatus() {
+        if (isShieldActive && (System.currentTimeMillis() - shieldActivatedTime > shieldDuration || shieldStrength <= 0)) {
+            deactivateShield();
+        }
+    }
+
+
+
+    public void updateShieldPosition() {
+        shieldCircle.setCenterX(getX() + getFitWidth() / 2);
+        shieldCircle.setCenterY(getY() + getFitHeight() / 2);
+    }
+
+    // Take damage method modified to consider shield
+    // Method to take damage and factor in the shield
+    public void takeDamageToS(double damage) {
+        if (isShieldActive) {
+            shieldStrength -= damage; // Shield absorbs damage
+            if (shieldStrength <= 0) {
+                deactivateShield(); // Deactivate shield if it's depleted
+            }
+        } else {
+            health -= damage; // No shield, damage goes directly to health
+            if (health < 0) health = 0; // Prevent health from going below 0
+        }
+    }
+
+
+
+
+
 
     public int getHealth() {
         return health;
@@ -58,14 +155,14 @@ public class Tank extends ImageView {
     }
 
 
-    public Circle createShieldCircle() {
-        Circle shieldCircle = new Circle(getFitWidth() / 2 + 10);
-        shieldCircle.setFill(Color.TRANSPARENT);
-        shieldCircle.setStroke(Color.BLUE); // Outline color for shield
-        shieldCircle.setStrokeWidth(4);
-        shieldCircle.setVisible(false); // Hidden by default
-        return shieldCircle;
-    }
+//    public Circle createShieldCircle() {
+//        Circle shieldCircle = new Circle(getFitWidth() / 2 + 10);
+//        shieldCircle.setFill(Color.TRANSPARENT);
+//        shieldCircle.setStroke(Color.BLUE); // Outline color for shield
+//        shieldCircle.setStrokeWidth(4);
+//        shieldCircle.setVisible(false); // Hidden by default
+//        return shieldCircle;
+//    }
 
 
     public void move(double dx, double dy, List<DestructibleObject> destructibleObjects) {
