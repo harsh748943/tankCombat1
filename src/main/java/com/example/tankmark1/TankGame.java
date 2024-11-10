@@ -3,8 +3,11 @@ package com.example.tankmark1;
 import javafx.application.Application;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+
+import java.awt.*;
 
 public class TankGame extends Application {
     private Scene mainMenuScene;
@@ -18,7 +21,9 @@ public class TankGame extends Application {
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        primaryStage.setTitle("Tank Game");
+        primaryStage.setTitle("Tank Combat");
+        Image image=new Image("/titlebar_logo.png");
+        primaryStage.getIcons().add(image);
 
         // Create and show the splash screen
         SplashScreen splashScreen = new SplashScreen();

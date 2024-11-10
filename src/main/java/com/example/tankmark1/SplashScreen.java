@@ -38,7 +38,7 @@ public class SplashScreen {
         primaryStage.show();
 
         // Set a fade-out transition
-        FadeTransition fadeTransition = new FadeTransition(Duration.seconds(7), splashImage);
+        FadeTransition fadeTransition = new FadeTransition(Duration.seconds(4), splashImage);
         fadeTransition.setFromValue(1.0);  // Start fully opaque
         fadeTransition.setToValue(0.0);    // End fully transparent
         fadeTransition.setOnFinished(event -> {

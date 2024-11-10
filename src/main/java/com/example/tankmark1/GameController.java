@@ -48,6 +48,7 @@ public class GameController extends Pane {
     private boolean isRobot=false;
     private ComputerTank computerTank;
     private List<Tank> allTanks=new ArrayList<>();
+    private Text pauseText;
 
     public GameController(int numPlayers, String selectedWeapon, String selectedMap, boolean soundOn, TankGame mainApp,String level) {
         this.numPlayers = numPlayers;
@@ -62,10 +63,20 @@ public class GameController extends Pane {
         setUpTanks();
         setUpHealthBars();
         startCountdown();
+        setUpPauseText();
 
 
     }
 
+    private void setUpPauseText() {
+        pauseText = new Text("Game Paused\nPress 'R' to Resume or 'M' to return to Menu");
+        pauseText.setFont(new Font(50));
+        pauseText.setFill(Color.RED);
+        pauseText.setLayoutX(400); // Center horizontally
+        pauseText.setLayoutY(400); // Center vertically
+        pauseText.setVisible(false);  // Initially hidden
+        this.getChildren().add(pauseText);
+    }
     private void startCountdown() {
 
         countdownText = new Text();
@@ -484,8 +495,9 @@ public class GameController extends Pane {
         if (pressedKeys.contains(KeyCode.Q)) tank1.rotate(-5); // Rotate counterclockwise
         if (pressedKeys.contains(KeyCode.E)) tank1.rotate(5); // Rotate clockwise
 
-        if (pressedKeys.contains(KeyCode.I)) tank2.rotate(-5); // Rotate counterclockwise
-        if (pressedKeys.contains(KeyCode.P)) tank2.rotate(5); // Rotate clockwise
+        if (pressedKeys.contains(KeyCode.NUMPAD7)) tank2.rotate(-5); // Rotate counterclockwise
+        if (pressedKeys.contains(KeyCode.NUMPAD9)) tank2.rotate(5); // Rotate clockwise
+        if (pressedKeys.contains(KeyCode.P)) tank2.rotate(5);
 
         if (tank1 != null) {
             if (pressedKeys.contains(KeyCode.W)) updateTankPosition(tank1, 0, -1);
