@@ -47,7 +47,7 @@ public class GameController extends Pane {
     private Thread movementThread;
     private boolean isRobot=false;
     private ComputerTank computerTank;
-
+    private List<Tank> allTanks=new ArrayList<>();
 
     public GameController(int numPlayers, String selectedWeapon, String selectedMap, boolean soundOn, TankGame mainApp,String level) {
         this.numPlayers = numPlayers;
@@ -62,6 +62,7 @@ public class GameController extends Pane {
         setUpTanks();
         setUpHealthBars();
         startCountdown();
+
 
     }
 
@@ -119,25 +120,40 @@ public class GameController extends Pane {
         countdown.play();
     }
     private void setUpHealthBars() {
+        // Player 1 Label
+        Text player1Label = new Text("Player 1");
+        player1Label.setFont(new Font(18));
+        player1Label.setFill(Color.RED);
+        player1Label.setLayoutX(10);  // Position above Player 1's health bar
+        player1Label.setLayoutY(25);
+
+        // Player 1 Health Bar
         healthBar1 = new ProgressBar(1);
         healthBar1.setStyle("-fx-accent: red;");
         healthText1 = new Text("100%");
-
-        // Position Player 1’s health on the left
         HBox player1HealthBox = new HBox(5, healthBar1, healthText1);
         player1HealthBox.setLayoutX(10);
-        player1HealthBox.setLayoutY(10);
+        player1HealthBox.setLayoutY(40);
 
+        // Player 2 Label
+        Text player2Label = new Text("Player 2");
+        player2Label.setFont(new Font(18));
+        player2Label.setFill(Color.BLUE);
+        player2Label.setLayoutX(1400);  // Position above Player 2's health bar
+        player2Label.setLayoutY(25);
+
+        // Player 2 Health Bar
         healthBar2 = new ProgressBar(1);
         healthBar2.setStyle("-fx-accent: BLUE;");
         healthText2 = new Text("100%");
-
-        // Position Player 2’s health on the right
         HBox player2HealthBox = new HBox(5, healthText2, healthBar2);
-        player2HealthBox.setLayoutX(1400); // Adjust based on scene width
-        player2HealthBox.setLayoutY(10);
-        this.getChildren().addAll(player1HealthBox,player2HealthBox);
+        player2HealthBox.setLayoutX(1400);
+        player2HealthBox.setLayoutY(40);
 
+        // Add to the scene
+        this.getChildren().addAll(player1Label, player1HealthBox, player2Label, player2HealthBox);
+
+        // Winner Text
         winnerText = new Text();
         winnerText.setFill(Color.RED);
         winnerText.setLayoutX(350);
@@ -145,6 +161,7 @@ public class GameController extends Pane {
         winnerText.setVisible(false);
         this.getChildren().add(winnerText);
     }
+
 
     public void updateHealthBars() {
         // Update Player 1 health bar and text
@@ -263,11 +280,14 @@ public class GameController extends Pane {
 
 
     private void setUpTanks() {
+
         tank1 = new Tank(100, 100, "tank.png", selectedWeapon);
+        allTanks.add(tank1);
         this.getChildren().add(tank1);
 
 
             tank2 = new Tank(1300, 700, "tank3.png", selectedWeapon);
+            allTanks.add(tank2);
             if(numPlayers>1) {
                 this.getChildren().add(tank2);
 
@@ -502,17 +522,5 @@ public class GameController extends Pane {
         });
     }
 
-    public Tank getTank1() {
-        return tank1;
-    }
 
-    public Tank getTank2() {
-        return tank2;
-    }
-
-
-
-    public  List<DestructibleObject> getDestructibleObjects() {
-        return destructibleObjects;
-    }
 }

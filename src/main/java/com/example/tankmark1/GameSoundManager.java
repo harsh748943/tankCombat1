@@ -13,19 +13,9 @@ public class GameSoundManager {
         //this.tukTukSound = new AudioClip(getClass().getResource("/tukTuk.mp3").toExternalForm());
     }
 
-//    public void playBackgroundMusic() {
-//        loadSounds();
-//        if (mediaPlayer != null) {
-//            mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
-//            mediaPlayer.play();
-//        }
-//    }
 
-    public void playTukTukSound() {
-        if (tukTukSound != null) {
-            tukTukSound.play();
-        }
-    }
+
+
     public void playBackgroundMusic() {
         if (mediaPlayer == null) {
             String musicFilePath = getClass().getResource("/music/background.mp3").toExternalForm();

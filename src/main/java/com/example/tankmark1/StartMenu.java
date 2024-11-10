@@ -94,7 +94,7 @@ public class StartMenu extends GridPane {
         // Sound toggle
         soundCheckbox = new CheckBox("Sound On/Off");
         soundCheckbox.setSelected(true); // Default is sound on
-        soundCheckbox.setTextFill(Color.WHITE);
+        soundCheckbox.setTextFill(Color.BLACK);
         soundCheckbox.setFont(Font.font("Arial", 14));
 
         // Start game button

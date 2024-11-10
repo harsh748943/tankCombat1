@@ -50,10 +50,6 @@ public class ComputerTank {
             long lastShootTime = 0;
             long lastMoveTime = 0;
 
-
-
-
-
             while (!gameController.gameOver) {  // Check game over status
                 try {
                     // Wait until countdown is complete before starting tank actions
@@ -73,6 +69,7 @@ public class ComputerTank {
 
                     if (shouldMove) {
                         final double[] dx = {0}, dy = {0};  // Final dx and dy for lambda expression
+                        boolean nearObject = false;  // Track if the tank is near any destructible objects
 
                         if (!tank1Destroyed && tank1 != null) {
                             // Calculate direction to tank1
@@ -98,8 +95,29 @@ public class ComputerTank {
                                 dy[0] = Math.sin(radians) * moveSpeed;
                             }
 
-                            // Rotate the tank to face tank1
-                            Platform.runLater(() -> computerTank.setRotate(angleToTank1));
+                            // Adjust movement to avoid destructible objects
+                            for (DestructibleObject obj : destructibleObjects) {
+                                double distToObject = Math.sqrt(
+                                        Math.pow(obj.getX() - computerTank.getX(), 2) +
+                                                Math.pow(obj.getY() - computerTank.getY(), 2)
+                                );
+
+                                if (distToObject < 200) {  // If too close, adjust direction
+                                    nearObject = true;  // Mark that we are near an object
+                                    double angleAwayFromObject = Math.toDegrees(Math.atan2(
+                                            computerTank.getY() - obj.getY(),
+                                            computerTank.getX() - obj.getX()
+                                    ));
+                                    double radiansAway = Math.toRadians(angleAwayFromObject);
+                                    dx[0] += Math.cos(radiansAway) * 1.3;  // Small offset to move away smoothly
+                                    dy[0] += Math.sin(radiansAway) * 1.3;
+                                }
+                            }
+
+                            // Only rotate towards tank1 if not near an object
+                            if (!nearObject) {
+                                Platform.runLater(() -> computerTank.setRotate(angleToTank1));
+                            }
                         } else {
                             // Random movement if tank1 is destroyed or far away
                             dx[0] = random.nextDouble() * 1 - 1;  // Random between -1 and 1
@@ -127,6 +145,8 @@ public class ComputerTank {
             }
         }).start();
     }
+
+
 
 }
 
