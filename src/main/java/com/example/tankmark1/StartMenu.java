@@ -42,7 +42,7 @@ public class StartMenu extends GridPane {
         setBackground(new Background(backgroundImage));
 
         // Title styling
-        Label title = new Label("Tank Game - Main Menu");
+        Label title = new Label("Tank Combat - Main Menu");
         title.setFont(Font.font("Arial", FontWeight.BOLD, 24));
         title.setTextFill(Color.WHITE);
 
@@ -62,7 +62,7 @@ public class StartMenu extends GridPane {
         weaponLabel.setTextFill(Color.WHITE);
         weaponLabel.setFont(Font.font("Arial", FontWeight.SEMI_BOLD, 16));
         weaponSelector = new ComboBox<>();
-        weaponSelector.getItems().addAll("Cannon", "Missile", "Laser");
+        weaponSelector.getItems().addAll("Cannon", "Missile", "Laser","Gamma-Blaster","Demon");
         weaponSelector.setValue("Cannon");
 
         // Style ComboBox and ensure white text for selected item
@@ -92,10 +92,10 @@ public class StartMenu extends GridPane {
         styleComboBox(levelSelector);
 
         // Sound toggle
-        soundCheckbox = new CheckBox("Sound On/Off");
+        soundCheckbox = new CheckBox("Background music");
         soundCheckbox.setSelected(true); // Default is sound on
         soundCheckbox.setTextFill(Color.BLACK);
-        soundCheckbox.setFont(Font.font("Arial", 14));
+        soundCheckbox.setFont(Font.font("Arial",FontWeight.BOLD, 15));
 
         // Start game button
         Button startButton = new Button("Start Game");

@@ -3,10 +3,7 @@ package com.example.tankmark1.tanks;
 
 import com.example.tankmark1.GameController;
 import com.example.tankmark1.map.DestructibleObject;
-import com.example.tankmark1.weapons.Cannon;
-import com.example.tankmark1.weapons.Missile;
-import com.example.tankmark1.weapons.Projectile;
-import com.example.tankmark1.weapons.Torpedo;
+import com.example.tankmark1.weapons.*;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -228,24 +225,34 @@ public class Tank extends ImageView {
 
             switch (weapon) {
                 case "Cannon":
-                    projectileImagePath = "cannonball.png"; // Path for cannonball image
+
                     projectileSpeed = 4;
                     projectileSize = 30;
                     projectile = new Cannon(getX() + 25, getY(), dx * projectileSpeed, dy * projectileSpeed, angle, this);
                     playShootingSound("/laserSound.wav"); // Play sound
                     break;
                 case "Missile":
-                    projectileImagePath = "rocket.png"; // Path for missile image
                     projectileSpeed = 3;
                     projectileSize = 50;
                     projectile = new Missile(getX() + 25, getY(), dx * projectileSpeed, dy * projectileSpeed, angle, this);
                     playShootingSound("/levelBossTorpedo.wav"); // Play sound
                     break;
                 case "Laser":
-                    projectileImagePath = "laser.png"; // Path for laser image
                     projectileSpeed = 3;
                     projectileSize = 50;
                     projectile = new Torpedo(getX() + 25, getY(), dx * projectileSpeed, dy * projectileSpeed, angle, this);
+                    playShootingSound("/levelBossRocket.wav"); // Play sound
+                    break;
+                case "Gamma-Blaster":
+                    projectileSpeed = 3;
+                    projectileSize = 50;
+                    projectile = new GammaBlaster(getX() + 25, getY(), dx * projectileSpeed, dy * projectileSpeed, angle, this);
+                    playShootingSound("/levelBossRocket.wav"); // Play sound
+                    break;
+                case "Demon":
+                    projectileSpeed = 3;
+                    projectileSize = 50;
+                    projectile = new Demon(getX() + 25, getY(), dx * projectileSpeed, dy * projectileSpeed, angle, this);
                     playShootingSound("/levelBossRocket.wav"); // Play sound
                     break;
                 default:
