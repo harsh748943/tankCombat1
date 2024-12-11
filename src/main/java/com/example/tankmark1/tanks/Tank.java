@@ -163,7 +163,7 @@ public class Tank extends ImageView {
 
 
     public void move(double dx, double dy, List<DestructibleObject> destructibleObjects) {
-        System.out.println("Moving with dx: " + dx + ", dy: " + dy + ", speed: " + speed);
+       // System.out.println("Moving with dx: " + dx + ", dy: " + dy + ", speed: " + speed);
         double newX = getX() + dx * speed;
         double newY = getY() + dy * speed;
 

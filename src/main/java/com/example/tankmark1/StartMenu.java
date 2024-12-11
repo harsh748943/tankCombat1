@@ -26,7 +26,7 @@ public class StartMenu extends GridPane {
 
         // Load and set the background image
         BackgroundImage backgroundImage = new BackgroundImage(
-                new javafx.scene.image.Image("TankBG4.jpg"),  // Load the image without preset dimensions
+                new javafx.scene.image.Image("Poster.png"),  // Load the image without preset dimensions
                 BackgroundRepeat.NO_REPEAT,
                 BackgroundRepeat.NO_REPEAT,
                 BackgroundPosition.CENTER,
@@ -42,9 +42,9 @@ public class StartMenu extends GridPane {
         setBackground(new Background(backgroundImage));
 
         // Title styling
-        Label title = new Label("Tank Combat - Main Menu");
-        title.setFont(Font.font("Arial", FontWeight.BOLD, 24));
-        title.setTextFill(Color.WHITE);
+//        Label title = new Label("Tank Combat - Main Menu");
+//        title.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+//        title.setTextFill(Color.WHITE);
 
         // Player selection
         Label playerLabel = new Label("Number of Players:");
@@ -131,7 +131,7 @@ public class StartMenu extends GridPane {
         });
 
         // Adding components to the layout
-        add(title, 0, 0, 2, 1);
+        //add(title, 0, 0, 2, 1);
         add(playerLabel, 0, 1);
         add(playerSelector, 1, 1);
         add(weaponLabel, 0, 2);
