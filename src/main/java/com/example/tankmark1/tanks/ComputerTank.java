@@ -59,7 +59,7 @@ public class ComputerTank {
                     }
 
                     long currentTime = System.currentTimeMillis();
-                    boolean shouldMove = currentTime - lastMoveTime > 100;  // Move every 0.1 second (smooth)
+                    boolean shouldMove = currentTime - lastMoveTime > 0;  // Move every 0.1 second (smooth)
                     boolean shouldShoot = currentTime - lastShootTime > shootInterval;  // Adjusted shooting interval
 
                     boolean tank1Destroyed = tank1 == null || tank1.isDestroyed();
