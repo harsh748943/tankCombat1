@@ -1,6 +1,7 @@
 package com.example.tankmark1.tanks;
 
-import com.example.tankmark1.GameController;
+import com.example.tankmark1.controllers.GameController;
+import com.example.tankmark1.controllers.ProjectileController;
 import com.example.tankmark1.map.DestructibleObject;
 import javafx.application.Platform;
 
@@ -15,14 +16,16 @@ public class ComputerTank {
     private boolean isRunning = true;
     private GameController gameController;
     private List<DestructibleObject> destructibleObjects;
+    ProjectileController projectileController;
 
 
-    public ComputerTank(Tank computerTank, Tank targetTank, GameController gameController, String level, List<DestructibleObject> destructibleObjects) {
+    public ComputerTank(Tank computerTank, Tank targetTank, GameController gameController, String level, List<DestructibleObject> destructibleObjects,ProjectileController projectileController) {
         this.computerTank = computerTank;
         this.tank1 = targetTank;
         setDifficulty(level);
         this.gameController=gameController;
         this.destructibleObjects=destructibleObjects;
+        this.projectileController=projectileController;
 
 
     }
@@ -131,7 +134,7 @@ public class ComputerTank {
 
                     if (shouldShoot && tank1 != null && !tank1Destroyed) {
                         // Shoot after the specified interval
-                        Platform.runLater(() -> computerTank.shoot(gameController));
+                        Platform.runLater(() -> computerTank.shoot(projectileController));
                         lastShootTime = currentTime;  // Update last shoot time
                     }
 

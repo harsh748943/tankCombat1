@@ -12,7 +12,6 @@ public class Projectile extends ImageView {
     private int damage;
     private String explosionImagePath;
     private String explosionSoundPath;
-    private int explosionFrameCount;
     private int explosionFrameWidth;
     private int explosionFrameHeight;
     private int explosionFrameColomn;
@@ -56,10 +55,6 @@ public class Projectile extends ImageView {
 
     public String getExplosionSoundPath() {
         return explosionSoundPath;
-    }
-
-    public int getExplosionFrameCount() {
-        return explosionFrameCount;
     }
 
     public int getExplosionFrameWidth() {

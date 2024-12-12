@@ -1,6 +1,6 @@
-package com.example.tankmark1;
+package com.example.tankmark1.controllers;
 
-import com.example.tankmark1.map.Tree;
+import com.example.tankmark1.TankGame;
 import com.example.tankmark1.tanks.Tank;
 import javafx.application.Platform;
 import javafx.scene.control.ProgressBar;
@@ -12,27 +12,29 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
+import java.util.ArrayList;
+
 public class HealthController {
   Pane pane;
     private ProgressBar healthBar1, healthBar2;
     private Text healthText1, healthText2;
     private Text winnerText;
-    public Tank tank1;
-    public Tank tank2;
+
     GameSoundManager gameSoundManager;
     private Thread movementThread;
     private TankGame mainApp;
     boolean gameOver[];
+    ArrayList<Tank>tanks;
     //HealthController(){};
-    HealthController(Pane pane, Tank tank1, Tank tank2, GameSoundManager gameSoundManager, Thread movementThread,TankGame mainApp,boolean gameOver[])
+    HealthController(Pane pane, ArrayList<Tank>tanks, GameSoundManager gameSoundManager, Thread movementThread, TankGame mainApp, boolean gameOver[])
     {
         this.pane=pane;
-        this.tank1=tank1;
-        this.tank2=tank2;
+
         this.gameSoundManager=gameSoundManager;
         this.movementThread=movementThread;
         this.mainApp=mainApp;
         this.gameOver=gameOver;
+        this.tanks=tanks;
     }
 
     public void setUpHealthBars() {
@@ -80,25 +82,25 @@ public class HealthController {
 
     public void updateHealthBars() {
         // Update Player 1 health bar and text
-        double health1 = tank1.getHealth();
+        double health1 = tanks.get(0).getHealth();
         healthBar1.setProgress(health1 / 100.0);
         healthText1.setText((int) health1 + "%");
 
         // Update Player 2 health bar and text
-        double health2 = tank2.getHealth();
+        double health2 = tanks.get(1).getHealth();
         healthBar2.setProgress(health2 / 100.0);
         healthText2.setText((int) health2 + "%");
     }
 
     public void checkForWin() {
-        if (tank1.isDestroyed()) {
+        if (tanks.get(0).isDestroyed()) {
             // Show destroyed image for tank1
-            tank1.setImage(new Image("/tankBlast.png"));
+            tanks.get(0).setImage(new Image("/tankBlast.png"));
             showWinningMessage("Player 2 Wins!","Press Enter to exit.");
             endGame();
-        } else if (tank2.isDestroyed()) {
+        } else if (tanks.get(1).isDestroyed()) {
             // Show destroyed image for tank2
-            tank2.setImage(new Image("/tankBlast1.png"));
+            tanks.get(1).setImage(new Image("/tankBlast1.png"));
             showWinningMessage("Player 1 Wins!","Press Enter to exit.");
             endGame();
         }
