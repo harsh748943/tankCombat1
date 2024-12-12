@@ -1,7 +1,11 @@
 package com.example.tankmark1;
 
+import com.example.tankmark1.map.Tree;
 import com.example.tankmark1.tanks.Tank;
+import javafx.application.Platform;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -15,11 +19,20 @@ public class HealthController {
     private Text winnerText;
     public Tank tank1;
     public Tank tank2;
-    HealthController(Pane pane,Tank tank1,Tank tank2)
+    GameSoundManager gameSoundManager;
+    private Thread movementThread;
+    private TankGame mainApp;
+    boolean gameOver[];
+    //HealthController(){};
+    HealthController(Pane pane, Tank tank1, Tank tank2, GameSoundManager gameSoundManager, Thread movementThread,TankGame mainApp,boolean gameOver[])
     {
         this.pane=pane;
         this.tank1=tank1;
         this.tank2=tank2;
+        this.gameSoundManager=gameSoundManager;
+        this.movementThread=movementThread;
+        this.mainApp=mainApp;
+        this.gameOver=gameOver;
     }
 
     public void setUpHealthBars() {
@@ -76,4 +89,79 @@ public class HealthController {
         healthBar2.setProgress(health2 / 100.0);
         healthText2.setText((int) health2 + "%");
     }
+
+    public void checkForWin() {
+        if (tank1.isDestroyed()) {
+            // Show destroyed image for tank1
+            tank1.setImage(new Image("/tankBlast.png"));
+            showWinningMessage("Player 2 Wins!","Press Enter to exit.");
+            endGame();
+        } else if (tank2.isDestroyed()) {
+            // Show destroyed image for tank2
+            tank2.setImage(new Image("/tankBlast1.png"));
+            showWinningMessage("Player 1 Wins!","Press Enter to exit.");
+            endGame();
+        }
+    }
+
+    private void showWinningMessage(String message,String message1) {
+        Text winningMessage = new Text(message);
+        Text winningMessage1 = new Text(message1);
+        winningMessage.setStyle(
+                "-fx-font-size: 55px; " +
+                        "-fx-font-weight: bold; " +
+                        "-fx-text-fill: #000000; " +  // Green color for the text
+                        "-fx-effect: dropshadow(gaussian, rgba(255,0,0,0.75), 10, 0.5, 0, 2); " +  // Shadow effect
+                        "-fx-background-color: rgba(255, 0, 0, 0.5); " +  // Semi-transparent dark background
+                        "-fx-padding: 20; " +
+                        "-fx-background-radius: 10; "
+        );
+        winningMessage1.setStyle(
+                "-fx-font-size: 25px; " +
+                        "-fx-font-weight: bold; " +
+                        "-fx-text-fill: #FF0000;" +
+                        "-fx-effect: dropshadow(gaussian, rgba(255,0,0,0.75), 10, 0.5, 0, 2); " +  // Shadow effect
+                        "-fx-background-color: rgba(255, 0, 0, 0.5); " +  // Semi-transparent dark background
+                        "-fx-padding: 20; " +
+                        "-fx-background-radius: 10; "
+        );
+
+        // Set the position to center
+        winningMessage.setX(600);  // X-coordinate for centering
+        winningMessage.setY(400);  // Y-coordinate for centering
+        winningMessage1.setX(670);  // X-coordinate for centering
+        winningMessage1.setY(470);  // Y-coordinate for centering
+
+
+        // Optional: Add the winning message to the root or main pane
+        pane.getChildren().add(winningMessage);
+        pane.getChildren().add(winningMessage1);
+    }
+
+    public void endGame() {
+        // Set game over flag
+        gameOver[0] = true;
+
+        // Stop movement and projectile threads
+        if (movementThread != null && movementThread.isAlive()) {
+            movementThread.interrupt();
+        }
+
+        gameSoundManager.stopMusic();
+
+        // Display winner message and await Enter key to return to menu
+        Platform.runLater(() -> {
+            // Disable tank controls to prevent further movement
+            pane.setOnKeyPressed(null);
+            pane.setOnKeyReleased(null);
+
+            // Set a listener for the Enter key to return to the menu
+            pane.setOnKeyPressed(event -> {
+                if (event.getCode() == KeyCode.ENTER) {
+                    mainApp.returnToMenu();
+                }
+            });
+        });
+    }
+
 }

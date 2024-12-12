@@ -28,24 +28,17 @@ public class GameController extends Pane {
     private int numPlayers;
     private String selectedWeapon;
     private String selectedMap;
-    private GameSoundManager soundManager;
+    public GameSoundManager soundManager;
     private boolean soundOn;
     private String level;
-    private MediaPlayer mediaPlayer;
     private TankGame mainApp;  // Reference to the main application
     public Tank tank1;
     public Tank tank2;
-    private ProgressBar healthBar1, healthBar2;
 
-    private ProgressBar sb1, sb2;
-    private Text st1, st2;
-
-    private Text healthText1, healthText2;
-    private Text winnerText;
     private Set<KeyCode> pressedKeys = new HashSet<>();
     private List<Projectile> projectiles = new ArrayList<>();
     private List<DestructibleObject> destructibleObjects = new ArrayList<>();
-    public boolean gameOver = false;
+    public boolean gameOver[] = {false};
     private Text countdownText;  // Countdown text display ke liye
     public boolean countdownComplete = false;  // Game tabhi start hoga jab countdown complete hoga
     private Thread movementThread;
@@ -53,6 +46,8 @@ public class GameController extends Pane {
     private ComputerTank computerTank;
     private List<Tank> allTanks=new ArrayList<>();
     HealthController healthController;
+    MapController mapController;
+    TankController tankController;
 
     public GameController(int numPlayers, String selectedWeapon, String selectedMap, boolean soundOn, TankGame mainApp,String level) {
         this.numPlayers = numPlayers;
@@ -62,12 +57,13 @@ public class GameController extends Pane {
         this.mainApp = mainApp;  // Assign mainApp reference
         this.level=level;
         soundManager = new GameSoundManager();
+         mapController=new MapController(this,selectedMap,destructibleObjects);
 
+        mapController.setUpMap();
+        tankController=new TankController(this,selectedWeapon,numPlayers,level,destructibleObjects);
 
-        setUpMap();
         setUpTanks();
-        healthController=new HealthController(this,tank1,tank2);
-
+        healthController=new HealthController(this,tank1,tank2, soundManager,movementThread,mainApp,gameOver);
         healthController.setUpHealthBars();
         startCountdown();
     }
@@ -127,112 +123,7 @@ public class GameController extends Pane {
     }
 
 
-    public void checkForWin() {
-        if (tank1.isDestroyed()) {
-            // Show destroyed image for tank1
-            tank1.setImage(new Image("/tankBlast.png"));
-            showWinningMessage("Player 2 Wins!","Press Enter to exit.");
-            endGame();
-        } else if (tank2.isDestroyed()) {
-            // Show destroyed image for tank2
-            tank2.setImage(new Image("/tankBlast1.png"));
-            showWinningMessage("Player 1 Wins!","Press Enter to exit.");
-            endGame();
-        }
-    }
-    private void showWinningMessage(String message,String message1) {
-        Text winningMessage = new Text(message);
-        Text winningMessage1 = new Text(message1);
-        winningMessage.setStyle(
-                "-fx-font-size: 55px; " +
-                        "-fx-font-weight: bold; " +
-                        "-fx-text-fill: #000000; " +  // Green color for the text
-                        "-fx-effect: dropshadow(gaussian, rgba(255,0,0,0.75), 10, 0.5, 0, 2); " +  // Shadow effect
-                        "-fx-background-color: rgba(255, 0, 0, 0.5); " +  // Semi-transparent dark background
-                        "-fx-padding: 20; " +
-                        "-fx-background-radius: 10; "
-        );
-        winningMessage1.setStyle(
-                "-fx-font-size: 25px; " +
-                        "-fx-font-weight: bold; " +
-                        "-fx-text-fill: #FF0000;" +
-                        "-fx-effect: dropshadow(gaussian, rgba(255,0,0,0.75), 10, 0.5, 0, 2); " +  // Shadow effect
-                        "-fx-background-color: rgba(255, 0, 0, 0.5); " +  // Semi-transparent dark background
-                        "-fx-padding: 20; " +
-                        "-fx-background-radius: 10; "
-        );
 
-        // Set the position to center
-        winningMessage.setX(600);  // X-coordinate for centering
-        winningMessage.setY(400);  // Y-coordinate for centering
-        winningMessage1.setX(670);  // X-coordinate for centering
-        winningMessage1.setY(470);  // Y-coordinate for centering
-
-
-        // Optional: Add the winning message to the root or main pane
-        this.getChildren().add(winningMessage);
-        this.getChildren().add(winningMessage1);
-    }
-
-
-    private void endGame() {
-        // Set game over flag
-        gameOver = true;
-
-        // Stop movement and projectile threads
-        if (movementThread != null && movementThread.isAlive()) {
-            movementThread.interrupt();
-        }
-
-        soundManager.stopMusic();
-
-        // Display winner message and await Enter key to return to menu
-        Platform.runLater(() -> {
-            // Disable tank controls to prevent further movement
-            this.setOnKeyPressed(null);
-            this.setOnKeyReleased(null);
-
-            // Set a listener for the Enter key to return to the menu
-            this.setOnKeyPressed(event -> {
-                if (event.getCode() == KeyCode.ENTER) {
-                    mainApp.returnToMenu();
-                }
-            });
-        });
-    }
-
-
-    private void setUpMap() {
-        Map currentMap;
-        switch (selectedMap) {
-            case "Forest" -> currentMap = new ForestMap();
-            case "Desert" -> currentMap = new DesertMap();
-            case "Tiles" -> currentMap = new TileMap();
-            case "Maze" -> currentMap = new MazeMap();
-
-            default -> currentMap = new SnowMap();
-        }
-        this.getChildren().add(currentMap);
-
-        // Add destructible objects to the list for collision checking
-        if (currentMap instanceof ForestMap forestMap) {
-            destructibleObjects.addAll(forestMap.getDestructibleObjects());
-        }
-        if (currentMap instanceof SnowMap snowMap) {
-            destructibleObjects.addAll(snowMap.getDestructibleObjects());
-        }
-        if (currentMap instanceof TileMap tileMap) {
-            destructibleObjects.addAll(tileMap.getDestructibleObjects());
-        }
-
-        if (currentMap instanceof MazeMap mazeMap) {
-            destructibleObjects.addAll(mazeMap.getDestructibleObjects());
-        }
-
-        if (currentMap instanceof DesertMap dMap) {
-            destructibleObjects.addAll(dMap.getDestructibleObjects());
-        }
-    }
 
 
     private void setUpTanks() {
@@ -361,7 +252,7 @@ public class GameController extends Pane {
 //                updatesb();
                 healthController.updateHealthBars();
                 removeProjectile(projectile);
-                checkForWin();
+                healthController.checkForWin();
 
                 createExplosion(projectile);
             }
@@ -380,7 +271,7 @@ public class GameController extends Pane {
 //                updatesb();
                 healthController.updateHealthBars();
                 removeProjectile(projectile);
-                checkForWin();
+                healthController.checkForWin();
 
                createExplosion(projectile);
             }
