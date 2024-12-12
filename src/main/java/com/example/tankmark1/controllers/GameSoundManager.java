@@ -1,6 +1,5 @@
-package com.example.tankmark1;
+package com.example.tankmark1.controllers;
 
-import javafx.scene.media.AudioClip;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 

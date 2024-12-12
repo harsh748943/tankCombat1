@@ -1,13 +1,12 @@
 package com.example.tankmark1;
 
+import com.example.tankmark1.controllers.GameController;
 import javafx.application.Application;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-
-import java.awt.*;
 
 public class TankGame extends Application {
     private Scene mainMenuScene;

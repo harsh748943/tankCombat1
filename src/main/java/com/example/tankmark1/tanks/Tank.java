@@ -1,7 +1,7 @@
 
 package com.example.tankmark1.tanks;
 
-import com.example.tankmark1.GameController;
+import com.example.tankmark1.controllers.ProjectileController;
 import com.example.tankmark1.map.DestructibleObject;
 import com.example.tankmark1.weapons.*;
 import javafx.geometry.Rectangle2D;
@@ -207,7 +207,7 @@ public class Tank extends ImageView {
         setRotate(angle);
     }
 
-    public void shoot(GameController gameController) {
+    public void shoot(ProjectileController projectileController) {
         long currentTime = System.currentTimeMillis();
         // Check if enough time has passed since the last shot
         if (currentTime - lastShotTime >= SHOOT_DELAY) {
@@ -269,7 +269,7 @@ public class Tank extends ImageView {
             projectile.setFitHeight(projectileSize);
 
             // Add the projectile to the game
-            gameController.addProjectile(projectile);
+            projectileController.addProjectile(projectile);
         }
     }
 

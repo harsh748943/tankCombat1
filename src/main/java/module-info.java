@@ -13,4 +13,6 @@ module com.example.tankmark1 {
     opens com.example.tankmark1.weapons to javafx.fxml;
     exports com.example.tankmark1.tanks;
     opens com.example.tankmark1.tanks to javafx.fxml;
+    exports com.example.tankmark1.controllers;
+    opens com.example.tankmark1.controllers to javafx.fxml;
 }
