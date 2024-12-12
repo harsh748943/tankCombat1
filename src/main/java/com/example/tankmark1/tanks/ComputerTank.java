@@ -50,7 +50,7 @@ public class ComputerTank {
             long lastShootTime = 0;
             long lastMoveTime = 0;
 
-            while (!gameController.gameOver) {  // Check game over status
+            while (!gameController.gameOver[0]) {  // Check game over status
                 try {
                     // Wait until countdown is complete before starting tank actions
                     if (!gameController.countdownComplete) {
